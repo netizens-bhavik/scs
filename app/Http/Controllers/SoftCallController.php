@@ -231,6 +231,7 @@ class SoftCallController extends Controller
             $email_id = $request->email_id;
             $requirements = $request->requirement;
             $requirement_remarks = $request->requirement_remarks;
+            $remarks = $request->remarks;
 
             $created_by = Auth::user()->id;
 
@@ -258,7 +259,8 @@ class SoftCallController extends Controller
                         $temp_leads->last_tele_caller_id = $spoken_with;
                         $temp_leads->last_call_date = date('Y-m-d H:i:s');
                         $temp_leads->recalling_date = $next_call_date;
-                        $temp_leads->tele_caller_id = null;;
+                        $temp_leads->tele_caller_id = null;
+                        $temp_leads->last_call_comment = $remarks;
                         $temp_leads->save();
 
                         $logData = array(
@@ -283,23 +285,23 @@ class SoftCallController extends Controller
                 }
             }
             if ($call_status == 3) {
-                if ($cell_no == null) {
-                    return response()->json(
-                        [
-                            'status' => false,
-                            'message' => 'Cell No is Required',
-                        ],
-                    );
-                }
+//                if ($cell_no == null) {
+//                    return response()->json(
+//                        [
+//                            'status' => false,
+//                            'message' => 'Cell No is Required',
+//                        ],
+//                    );
+//                }
 
-                if ($email_id == null) {
-                    return response()->json(
-                        [
-                            'status' => false,
-                            'message' => 'Email Id is Required',
-                        ],
-                    );
-                }
+//                if ($email_id == null) {
+//                    return response()->json(
+//                        [
+//                            'status' => false,
+//                            'message' => 'Email Id is Required',
+//                        ],
+//                    );
+//                }
 
                 if ($requirements == null) {
                     return response()->json(
@@ -328,6 +330,7 @@ class SoftCallController extends Controller
                 $temp_leads->last_tele_caller_id = $spoken_with;
                 $temp_leads->last_call_date = date('Y-m-d H:i:s');
                 $temp_leads->recalling_date =  date('Y-m-d H:i:s');
+                $temp_leads->last_call_comment = $remarks;
                 $temp_leads->tele_caller_id = null;
                 $temp_leads->save();
 
@@ -367,7 +370,7 @@ class SoftCallController extends Controller
                 return response()->json(
                     [
                         'status' => true,
-                        'message' => 'Lead Added Successfully',
+                        'message' => 'Saved Successfully',
                     ],
                 );
             }
@@ -381,6 +384,7 @@ class SoftCallController extends Controller
                 $temp_leads->calling_status = $call_status;
                 $temp_leads->call_type = 1;
                 $temp_leads->tele_caller_id = null;
+                $temp_leads->last_call_comment = $remarks;
                 $temp_leads->save();
 
                 return response()->json(
@@ -400,6 +404,7 @@ class SoftCallController extends Controller
                 $temp_leads->is_assigned = 0;
                 $temp_leads->last_tele_caller_id = $spoken_with;
                 $temp_leads->tele_caller_id = null;
+                $temp_leads->last_call_comment = $remarks;
                 $temp_leads->save();
 
                 $logData = array(
@@ -429,6 +434,7 @@ class SoftCallController extends Controller
                 $temp_leads->last_call_date = date('Y-m-d H:i:s');
                 $temp_leads->is_assigned = 0;
                 $temp_leads->tele_caller_id = $spoken_with;
+                $temp_leads->last_call_comment = $remarks;
                 $temp_leads->save();
 
                 $logData = array(
@@ -479,6 +485,7 @@ class SoftCallController extends Controller
             $email_id = $request->email_id;
             $requirements = $request->requirement;
             $requirement_remarks = $request->requirement_remarks;
+            $remarks = $request->remarks;
 
             $created_by = Auth::user()->id;
 
@@ -507,6 +514,7 @@ class SoftCallController extends Controller
                         $temp_leads->last_call_date = date('Y-m-d H:i:s');
                         $temp_leads->recalling_date = $next_call_date;
                         $temp_leads->tele_caller_id = null;
+                        $temp_leads->last_call_comment = $remarks;
                         $temp_leads->save();
 
                         $logData = array(
@@ -576,6 +584,7 @@ class SoftCallController extends Controller
                 $temp_leads->last_call_date = date('Y-m-d H:i:s');
                 $temp_leads->recalling_date = date('Y-m-d H:i:s');
                 $temp_leads->tele_caller_id = null;
+                $temp_leads->last_call_comment = $remarks;
                 $temp_leads->save();
 
                 if ($requirements == 1) {
@@ -614,7 +623,7 @@ class SoftCallController extends Controller
                 return response()->json(
                     [
                         'status' => true,
-                        'message' => 'Lead Added Successfully',
+                        'message' => 'Saved Successfully',
                     ],
                 );
             }
@@ -628,6 +637,7 @@ class SoftCallController extends Controller
                 $temp_leads->calling_status = $call_status;
                 $temp_leads->call_type = 2;
                 $temp_leads->tele_caller_id = null;
+                $temp_leads->last_call_comment = $remarks;
                 $temp_leads->save();
 
                 $logData = array(
@@ -658,6 +668,7 @@ class SoftCallController extends Controller
                 $temp_leads->is_assigned = 0;
                 $temp_leads->last_tele_caller_id = $spoken_with;
                 $temp_leads->tele_caller_id = null;
+                $temp_leads->last_call_comment = $remarks;
                 $temp_leads->save();
 
                 $logData = array(
@@ -687,6 +698,7 @@ class SoftCallController extends Controller
                 $temp_leads->last_call_date = date('Y-m-d H:i:s');
                 $temp_leads->is_assigned = 0;
                 $temp_leads->tele_caller_id = null;
+                $temp_leads->last_call_comment = $remarks;
                 $temp_leads->save();
 
                 $logData = array(
@@ -783,6 +795,7 @@ class SoftCallController extends Controller
             }
 
             $temp_leads['company_country'] = $company_country['country_name'];
+            $temp_leads['country_code'] = $company_country['country_code'];
             $temp_leads['company_city'] = $company_city['city_name'];
             $temp_leads['industry'] = $industry['industry_name'];
             $temp_leads['calling_status'] = $calling_status_list[$temp_leads['calling_status']];

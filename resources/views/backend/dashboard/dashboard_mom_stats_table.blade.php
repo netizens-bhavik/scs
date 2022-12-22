@@ -18,6 +18,7 @@
                     <th>User Name</th>
                     <th class="all">Company Name</th>
                     <th>Contact Person</th>
+                    <th>Mode Of Meeting</th>
                     <th class="all">ACTION</th>
                     <th>SHARED BY</th>
                 </tr>
@@ -44,7 +45,7 @@
 
             columnDefs: [{
                 orderable: false,
-                targets: [0, 1, 2, 3, 4, 5,6]
+                targets: [0, 1, 2, 3, 4, 5,6,7]
             }],
             lengthChange: false,
             ajax: {
@@ -81,6 +82,10 @@
                     name: 'contact_person'
                 },
                 {
+                    data: 'mode_of_meeting_name',
+                    name: 'mode_of_meeting_name'
+                },
+                {
                     data: 'action',
                     name: 'action'
                 },
@@ -110,8 +115,8 @@
                     "_token": "{{ csrf_token() }}",
                     id: $(e.target).closest('a').attr('data-id'),
                     dashboard_country_id: "{{ $filter_data['country_id'] ?? '' }}",
-                    dashboard_user_id: "{{ $filter_data['user_id'] ?? '' }}",   
-                    dashboard_flag: true,                 
+                    dashboard_user_id: "{{ $filter_data['user_id'] ?? '' }}",
+                    dashboard_flag: true,
                 },
                 beforeSend: function () {
                     swal({

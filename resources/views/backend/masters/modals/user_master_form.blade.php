@@ -208,7 +208,7 @@
                                                     <input class="form-check-input permission_check"
                                                         type="checkbox" name="user_rights[]" value="city_delete"
                                                         id="city_delete"
-                                                        @isset($user_data) 
+                                                        @isset($user_data)
                                                         @if (in_array('city_delete', $user_data['permissions'])) checked @endif
                                                         @endisset>
                                                     Delete
@@ -296,6 +296,49 @@
                                                         value="industry_delete" id="industry_delete"
                                                         @isset($user_data)
                                                         @if (in_array('industry_delete', $user_data['permissions'])) checked @endif
+                                                        @endisset>
+                                                    Delete
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>MOM Modes</td>
+                                        <td>
+                                            <div class="permissions-check-listing">
+                                                <div class="permissions-check-click">
+                                                    <input class="form-check-input permission_check"
+                                                           type="checkbox" name="user_rights[]"
+                                                           value="mom_mode_view" id="mom_mode_view"
+                                                           @isset($user_data)
+                                                               @if (in_array('mom_mode_view', $user_data['permissions'])) checked @endif
+                                                        @endisset>
+                                                    View
+                                                </div>
+                                                <div class="permissions-check-click">
+                                                    <input class="form-check-input permission_check"
+                                                           type="checkbox" name="user_rights[]" value="mom_mode_add"
+                                                           id="mom_mode_add"
+                                                           @isset($user_data)
+                                                               @if (in_array('mom_mode_add', $user_data['permissions'])) checked @endif
+                                                        @endisset>
+                                                    Add
+                                                </div>
+                                                <div class="permissions-check-click">
+                                                    <input class="form-check-input permission_check"
+                                                           type="checkbox" name="user_rights[]"
+                                                           value="mom_mode_edit" id="mom_mode_edit"
+                                                           @isset($user_data)
+                                                               @if (in_array('mom_mode_edit', $user_data['permissions'])) checked @endif
+                                                        @endisset>
+                                                    Edit
+                                                </div>
+                                                <div class="permissions-check-click">
+                                                    <input class="form-check-input permission_check"
+                                                           type="checkbox" name="user_rights[]"
+                                                           value="mom_mode_delete" id="mom_mode_delete"
+                                                           @isset($user_data)
+                                                               @if (in_array('mom_mode_delete', $user_data['permissions'])) checked @endif
                                                         @endisset>
                                                     Delete
                                                 </div>
@@ -544,7 +587,7 @@
                                                         @isset($user_data)
                                                         @if (in_array('call_status_uw_report', $user_data['permissions'])) checked @endif
                                                         @endisset>
-                                                    Call Status (User Wise) Report 
+                                                    Call Status (User Wise) Report
                                                 </div>
                                                 <div class="permissions-check-click">
                                                     <input class="form-check-input permission_check"

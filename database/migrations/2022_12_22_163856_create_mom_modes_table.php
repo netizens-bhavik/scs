@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateCountriesTable extends Migration
+class CreateMomModesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,9 @@ class CreateCountriesTable extends Migration
      */
     public function up()
     {
-        Schema::create('countries', function (Blueprint $table) {
+        Schema::create('mom_modes', function (Blueprint $table) {
             $table->id();
-            $table->string('country_name');
-            $table->string('country_code')->nullable();
+            $table->string('mode_name');
             $table->integer('created_by')->nullable();
             $table->integer('modified_by')->nullable();
             $table->tinyInteger('is_deleted')->nullable();
@@ -31,6 +30,6 @@ class CreateCountriesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('countries');
+        Schema::dropIfExists('mom_modes');
     }
 }

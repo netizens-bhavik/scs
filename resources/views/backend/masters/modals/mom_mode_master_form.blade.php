@@ -1,29 +1,20 @@
-<div class="modal" id="manageCountryModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-hidden="true">
+<div class="modal" id="manageMomModeModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-sm" role="document">
         <div class="modal-content">
             <div class="modal-header container">
-                <h5 class="modal-title" id="modalFullTitle">
-                    {{-- {{ isset($country->id) && !empty($country->id) ? 'Edit Country' : 'Add Country' }} --}}
-                    Manage Country
-                </h5>
+                <h5 class="modal-title" id="modalFullTitle">Manage Mode Of Meeting</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <span class="text-danger" id="error_msg"></span>
-                <form id="country_master_form" class="row g-3" method="POST" action="javascript:void(0)">
+                <form id="mom_mode_master_form" class="row g-3" method="POST" action="javascript:void(0)">
                     @csrf
-                    <input type="hidden" name="id" id="country_id" value="{{ $country->id ?? '' }}">
+                    <input type="hidden" name="id" id="mom_mode_id" value="{{ $mom_mode->id ?? '' }}">
                     <div class="col-md-12">
                         <span class="text-danger">*</span>
                         <label for="name" class="form-label">Name</label>
                         <input type="text" class="form-control" name="name"
-                            value="{{ $country->country_name ?? '' }}" placeholder="Name">
-                    </div>
-                    <div class="col-md-12">
-                        <span class="text-danger">*</span>
-                        <label for="country_code" class="form-label">Country Code</label>
-                        <input type="text" class="form-control" name="country_code"
-                               value="{{ $country->country_code ?? '' }}" placeholder="Country Code">
+                            value="{{ $mom_mode->mode_name ?? '' }}" placeholder="Name">
                     </div>
                 </form>
             </div>
@@ -31,7 +22,7 @@
                 <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" title="Close">
                     Close
                 </button>
-                <button type="submit" class="btn btn-primary" id="save_country" title="Submit">Save</button>
+                <button type="submit" class="btn btn-primary" id="save_mom_mode" title="Submit">Save</button>
             </div>
         </div>
     </div>
@@ -39,17 +30,17 @@
 
 <script type="text/javascript">
     $(document).ready(function() {
-        bindCountryModalEvents();
+        bindMomModeModalEvents();
     });
 
     /**
      * Bind Modal Events
      *
      */
-    function bindCountryModalEvents() {
+    function bindMomModeModalEvents() {
         // $('#manageCountryModal').on('shown.bs.modal', function() {
-        $("#save_country").on('click', function(e) {
-            bindCountryValidationEvent();
+        $("#save_mom_mode").on('click', function(e) {
+            bindMomModeValidationEvent();
         });
         // });
     }
@@ -58,23 +49,15 @@
      * validate Country
      *
      */
-    $("#country_master_form").validate({
+    $("#mom_mode_master_form").validate({
         rules: {
             name: {
-                required: true,
-                minlength: 2
-            },
-            country_code: {
                 required: true,
             },
         },
         messages: {
             name: {
-                required: "Country name is required",
-                minlength: " Your country name must consist of at least 2 characters"
-            },
-            country_code: {
-                required: "Country code is required",
+                required: "Please enter a Mode Of Meeting",
             },
         }
     });
@@ -83,18 +66,18 @@
      * Save country
      *
      */
-    function bindCountryValidationEvent() {
-        if ($("#country_master_form").valid()) {
-            saveCountry();
+    function bindMomModeValidationEvent() {
+        if ($("#mom_mode_master_form").valid()) {
+            saveMomMode();
         }
     }
 
-    function saveCountry() {
+    function saveMomMode() {
         jQuery.ajax({
             type: 'POST',
-            url: "{{ url('save_country') }}",
+            url: "{{ url('save_mom_mode') }}",
             dataType: 'JSON',
-            data: jQuery("#country_master_form").serialize(),
+            data: jQuery("#mom_mode_master_form").serialize(),
             beforeSend: function() {
                 swal({
                     title: "info",
@@ -108,13 +91,11 @@
             success: function(data) {
                 if (data.status == true) {
                     swal.close();
-                    $('#countryDataTableContainer').show();
-                    $('#noCountryDataTableContainer').hide();
-                    jQuery("#manageCountryModal").modal('hide');
-                    if (!$.fn.dataTable.isDataTable('#country_table')) {
-                        initCountryTable();
+                    jQuery("#manageMomModeModal").modal('hide');
+                    if (!$.fn.dataTable.isDataTable('#mom_mode_table')) {
+                        initIndustryTable();
                     } else {
-                        jQuery('#country_table').DataTable().ajax.reload();
+                        jQuery('#mom_mode_table').DataTable().ajax.reload();
                     }
 
                     swal({

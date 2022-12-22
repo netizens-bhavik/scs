@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Mail\mom_share_user_notification_mail;
 use App\Models\Mom;
+use App\Models\MomMode;
 use App\Models\User;
 use App\Models\Client;
 use App\Models\MomJob;
@@ -50,18 +51,20 @@ class MOMController extends Controller
         $records = DB::table('moms')
             ->leftJoin('clients', 'moms.client_id', '=', 'clients.id')
             ->leftJoin('users', 'moms.shared_user_by', '=', 'users.id')
+            ->leftJoin('mom_modes', 'moms.mode_of_meeting', '=', 'mom_modes.id')
             ->where('moms.is_deleted', '=', null)
             ->where(function ($query) use ($searchValue) {
                 $query->where('clients.company_name', 'like', '%' . $searchValue . '%')
                     ->orWhere('contact_person', 'like', '%' . $searchValue . '%')
                     ->orWhere('minutes_of_meeting', 'like', '%' . $searchValue . '%')
-                    ->orWhere('bde_feedback', 'like', '%' . $searchValue . '%');
+                    ->orWhere('bde_feedback', 'like', '%' . $searchValue . '%')
+                    ->orWhere('mode_name', 'like', '%' . $searchValue . '%');
             })
             ->where(function ($query) use ($hierarchy_users, $user_id) {
                 $query->whereIn('clients.manage_by', $hierarchy_users)
                     ->orWhere('moms.share_user_id', '=', $user_id);
             })
-            ->select('moms.*', 'clients.company_name', 'clients.manage_by', 'users.name as shared_user_name')
+            ->select('moms.*', 'clients.company_name', 'clients.manage_by', 'users.name as shared_user_name', 'mom_modes.mode_name as mode_of_meeting_name')
             ->orderBy($columnName, $columnSortOrder)
             ->skip($start)
             ->take($rowperpage)
@@ -83,12 +86,14 @@ class MOMController extends Controller
         $totalRecordswithFilter = DB::table('moms')
             ->leftJoin('clients', 'moms.client_id', '=', 'clients.id')
             ->leftJoin('users', 'moms.shared_user_by', '=', 'users.id')
+            ->leftJoin('mom_modes', 'moms.mode_of_meeting', '=', 'mom_modes.id')
             ->where('moms.is_deleted', '=', null)
             ->where(function ($query) use ($searchValue) {
                 $query->where('clients.company_name', 'like', '%' . $searchValue . '%')
                     ->orWhere('contact_person', 'like', '%' . $searchValue . '%')
                     ->orWhere('minutes_of_meeting', 'like', '%' . $searchValue . '%')
-                    ->orWhere('bde_feedback', 'like', '%' . $searchValue . '%');
+                    ->orWhere('bde_feedback', 'like', '%' . $searchValue . '%')
+                    ->orWhere('mode_name', 'like', '%' . $searchValue . '%');
             })
             ->where(function ($query) use ($hierarchy_users, $user_id) {
                 $query->whereIn('clients.manage_by', $hierarchy_users)
@@ -165,6 +170,7 @@ class MOMController extends Controller
                 "contact_person" => $record['contact_person'],
                 "minutes_of_meeting" => $record['minutes_of_meeting'],
                 "bde_feedback" => $record['bde_feedback'],
+                "mode_of_meeting_name" => $record['mode_of_meeting_name'],
                 "mom_type" => $momType,
                 "action" => $action_btn,
                 "shared_user_name" => $record['shared_user_name'] ?? '-',
@@ -200,7 +206,7 @@ class MOMController extends Controller
             $mom['jobs'] = MomJob::where('mom_id', $request->id)->where('is_deleted', null)->get()->toArray();
             $mom['contactPersons'] = ContactPerson::where('client_id', $mom['client_id'])->where('is_deleted', null)->get()->toArray();
         }
-        
+
         $user = Auth::user();
         $this->finalArray = [];
         $hirarchyUsers = $this->getHirarchyUser($user->id);
@@ -215,6 +221,8 @@ class MOMController extends Controller
             ->where('is_deleted', null)
             ->get()->toArray();
 
+        $meeting_modes = MomMode::where('is_deleted', null)->get()->toArray();
+
 
         if($dashboard_flag)
         {
@@ -226,7 +234,6 @@ class MOMController extends Controller
             $data['follow_up_id'] = $mom['id'] ?? '';
 
         } else {
-
             $data = $mom;
         }
 
@@ -234,6 +241,7 @@ class MOMController extends Controller
             'clients' => $clients,
             'users' => $users,
             'mom' => $data,
+            'meeting_modes' => $meeting_modes,
             'dashboard_country_id' => $dashboard_country_id,
             'dashboard_user_id' => $dashboard_user_id,
             'dashboard_flag' => $dashboard_flag,
@@ -302,6 +310,7 @@ class MOMController extends Controller
                     'mom_type' => $request->mom_type,
                     'followup' => $request->followup,
                     'share_user_id' => $request->share_user_id,
+                    'mode_of_meeting' => $request->meeting_mode_id,
                     'next_followup_date' => $request->next_followup_date,
                     'next_followup_time' => $request->next_followup_time,
                     'client_status' => $request->client_status,
@@ -420,6 +429,7 @@ class MOMController extends Controller
                     'mom_type' => $request->mom_type,
                     'followup' => $request->followup,
                     'share_user_id' => $request->share_user_id,
+                    'mode_of_meeting' => $request->meeting_mode_id,
                     'next_followup_date' => $request->next_followup_date,
                     'next_followup_time' => $request->next_followup_time,
                     'client_status' => $request->client_status,

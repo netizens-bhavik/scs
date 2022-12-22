@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Mom;
 use App\Models\City;
+use App\Models\MomMode;
 use App\Models\User;
 use App\Models\Leads;
 use App\Models\Client;
@@ -84,7 +85,7 @@ class LeadController extends Controller
             })
             ->select('leads.*', 'u2.name as assigned_to', 'temp_leads.contact_person_name', 'temp_leads.address', 'temp_leads.company_name', 'countries.country_name', 'industries.industry_name')
             ->get()->toArray();
-            
+
         $totalRecords = 0;
         foreach ($totalRecords_data as $key => $value) {
             $mom = [];
@@ -282,6 +283,7 @@ class LeadController extends Controller
         $MOMController = new MOMController;
         $userIds = $MOMController->getHirarchyUser($user->id);
         $userIds[] = $user->id;
+        $meeting_modes = MomMode::where('is_deleted', null)->get()->toArray();
 
         //we can get company name from clients
         $clients = Client::whereIn('manage_by', $userIds)->get()->toArray();
@@ -310,6 +312,7 @@ class LeadController extends Controller
             'users' => $users,
             'mom' => $mom,
             'isBDE' => 1,
+            'meeting_modes' => $meeting_modes,
         ]);
     }
 }

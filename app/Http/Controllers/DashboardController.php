@@ -54,7 +54,6 @@ class DashboardController extends Controller
         $all_users = json_decode(json_encode($all_users), true);
 
 
-
         // $all_users = User::all()->toArray();
 
         return view('backend.index', compact('selected_menu', 'user_data', 'all_country', 'all_users'));
@@ -203,7 +202,7 @@ class DashboardController extends Controller
             ->get()->toArray();
 
 
-        if($client_data){
+        if ($client_data) {
             $client_data = (array)$client_data;
 
             $client_mom_data = DB::table('moms')
@@ -213,11 +212,11 @@ class DashboardController extends Controller
                 ->get()->toArray();
             $client_data['moms'] = $client_mom_data;
 
-        }else{
+        } else {
             echo "No data found";
         }
 
-         return view('backend.client_history.client_history', compact('selected_menu', 'client_data'));
+        return view('backend.client_history.client_history', compact('selected_menu', 'client_data'));
     }
 
     public function outgoing_dashboard()
@@ -274,6 +273,7 @@ class DashboardController extends Controller
                 }
 
                 $temp_leads['company_country'] = $company_country['country_name'];
+                $temp_leads['country_code'] = $company_country['country_code'];
                 $temp_leads['company_city'] = $company_city['city_name'];
                 $temp_leads['industry'] = $industry['industry_name'];
                 $temp_leads['calling_status'] = $calling_status_list[$temp_leads['calling_status']];
@@ -315,6 +315,7 @@ class DashboardController extends Controller
                 }
 
                 $temp_leads['company_country'] = $company_country['country_name'];
+                $temp_leads['country_code'] = $company_country['country_code'];
                 $temp_leads['company_city'] = $company_city['city_name'];
                 $temp_leads['industry'] = $industry['industry_name'];
                 $temp_leads['calling_status'] = $calling_status_list[$temp_leads['calling_status']];
@@ -370,6 +371,7 @@ class DashboardController extends Controller
                 }
 
                 $temp_leads['company_country'] = $company_country['country_name'];
+                $temp_leads['country_code'] = $company_country['country_code'];
                 $temp_leads['company_city'] = $company_city['city_name'];
                 $temp_leads['industry'] = $industry['industry_name'];
                 $temp_leads['calling_status'] = $calling_status_list[$temp_leads['calling_status']];
@@ -470,4 +472,11 @@ class DashboardController extends Controller
         $selected_menu = 'notes';
         return view('backend/notes', compact('selected_menu'));
     }
+
+    public function mom_modes()
+    {
+        $selected_menu = 'mom_modes';
+        return view('backend.masters.mom_modes_master', compact('selected_menu'));
+    }
+
 }

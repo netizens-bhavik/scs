@@ -18,6 +18,7 @@ class Mom extends Model
         'mom_type',
         'followup',
         'share_user_id',
+        'mode_of_meeting',
         'next_followup_date',
         'next_followup_time',
         'client_status',

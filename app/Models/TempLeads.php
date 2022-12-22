@@ -29,6 +29,7 @@ class TempLeads extends Model
         'calling_status',
         'recalling_date',
         'call_type',
+        'last_call_comment',
         'tele_caller_id',
         'imported_by',
         'created_by',
@@ -44,7 +45,7 @@ class TempLeads extends Model
     {
         return $this->belongsTo(City::class);
     }
-    
+
     public function industry()
     {
         return $this->belongsTo(Industry::class);

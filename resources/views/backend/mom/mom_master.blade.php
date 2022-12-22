@@ -48,6 +48,7 @@
                                     <th>Minutes of Meeting</th>
                                     <th>BDE Feedback</th>
                                     <th>MOM Type</th>
+                                    <th>Mode of Meeting</th>
                                     <th class="all">Action</th>
                                     <th>Shared By</th>
                                 </tr>
@@ -146,6 +147,9 @@
                         data: 'mom_type'
                     },
                     {
+                        data: 'mode_of_meeting_name'
+                    },
+                    {
                         data: 'action'
                     },
                     {
@@ -161,7 +165,7 @@
                 },
                 columnDefs: [{
                     orderable: false,
-                    targets: [0,1, 7,8]
+                    targets: [0,1, 7,8,9]
                 }]
             });
         };

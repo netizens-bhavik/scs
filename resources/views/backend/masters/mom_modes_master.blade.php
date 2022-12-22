@@ -9,36 +9,35 @@
             <div class="card">
                 <div class="card-header">
                     <div class="main-heading">
-                        <h4 class="card-label" style="">COUNTRY MASTER
+                        <h4 class="card-label" style="">MODE OF MEETING MASTER
                         </h4>
                         <div class="text-end">
-                            @can('country_add')
-                                <button type="button" class="btn btn-primary" id="add_new_country" title="Add">
-                                    <i class="bx bx-plus"></i> Add Country
-                                </button>
+                            @can('mom_mode_add')
+                                <a href="javascript:void(0);" class="btn btn-primary font-weight-bolder"
+                                   id="add_new_mom_mode" title="Add">
+                                    <i class="bx bx-plus"></i>Add MOM-MODE</a>
+                                </a>
                             @endcan
                         </div>
                     </div>
                 </div>
                 <div class="card-body">
-                    @can('country_view')
-                        <div id="countryDataTableContainer">
-                            <table id="country_table" class="table table-striped table-bordered mt-5 display responsive nowrap"
-                                style="width:100%">
+                    @can('mom_mode_view')
+                        <div id="momModeDataTableContainer">
+                            <table id="mom_mode_table" class="table table-striped table-bordered mt-5">
                                 <thead>
-                                    <tr>
-                                        <th>No</th>
-                                        <th>Name</th>
-                                        <th>Country Code</th>
-                                        <th class="all">Action</th>
-                                    </tr>
+                                <tr>
+                                    <th>No</th>
+                                    <th>Name</th>
+                                    <th class="all">Action</th>
+                                </tr>
                                 </thead>
                                 <tbody>
                                 </tbody>
                             </table>
                         </div>
                     @endcan
-                    <div id="manageCountryModalBox"></div>
+                    <div id="manageMOMModeModalBox"></div>
                 </div>
             </div>
         </div>
@@ -48,58 +47,53 @@
 
 @section('scripts')
     <script type="text/javascript">
-        $(document).ready(function() {
-            initCountryTable();
-            bindAddCountryEvent();
+        $(document).ready(function () {
+            initMomModeTable();
+            bindAddMomModeEvent();
         });
 
-        var initCountryTable = function() {
+        var initMomModeTable = function () {
 
-            jQuery('#noCountryDataTableContainer').hide();
             // DataTable
-            $('#country_table').DataTable({
-                responsive: true,
+            $('#mom_mode_table').DataTable({
                 order: [],
                 pageLength: 25,
                 info: false,
+                responsive: true,
                 lengthChange: false,
                 processing: true,
                 serverSide: true,
-                searchDelay: 500,
-                columnDefs: [{
-                    orderable: false,
-                    targets: [0, 3],
-                }],
                 ajax: {
-                    url: "{{ url('get_country_list') }}",
+                    url: "{{ url('get_mom_mode_list') }}",
                     type: 'POST',
                     data: {
                         "_token": "{{ csrf_token() }}"
                     },
-                    dataSrc: function(res) {
+                    dataSrc: function (res) {
                         return res.data;
                     }
                 },
                 columns: [{
-                        data: 'id'
-                    },
+                    data: 'id'
+                },
                     {
-                        data: 'country_name'
-                    },
-                    {
-                        data: 'country_code'
+                        data: 'mode_name'
                     },
                     {
                         data: 'action'
                     },
                 ],
-                fnDrawCallback: function(index, rec) {
+                fnDrawCallback: function (index, rec) {
                     if (index.fnRecordsTotal().toString() == "0") {
                         return;
                     }
-                    bindEditCountryEvent();
-                    bindDeleteCountryEvent();
-                }
+                    bindEditMomModeEvent();
+                    bindDeleteMomModeEvent();
+                },
+                columnDefs: [{
+                    orderable: false,
+                    targets: [-1, 0]
+                }]
             });
         };
 
@@ -107,15 +101,15 @@
         /**
          *  add country
          */
-        function bindAddCountryEvent() {
-            jQuery("#add_new_country").on('click', function(e) {
+        function bindAddMomModeEvent() {
+            jQuery("#add_new_mom_mode").on('click', function (e) {
                 jQuery.ajax({
-                    url: "{{ url('manage_country') }}",
+                    url: "{{ url('manage_mom_mode') }}",
                     method: 'POST',
                     data: {
                         "_token": "{{ csrf_token() }}",
                     },
-                    beforeSend: function() {
+                    beforeSend: function () {
                         swal({
                             title: "info",
                             text: "Please Wait, Your Request has been processed!",
@@ -125,12 +119,12 @@
                             closeOnEsc: false
                         });
                     },
-                    success: function(data) {
+                    success: function (data) {
                         swal.close();
-                        jQuery("#manageCountryModalBox").html(data);
-                        jQuery("#manageCountryModal").modal('show');
+                        jQuery("#manageMOMModeModalBox").html(data);
+                        jQuery("#manageMomModeModal").modal('show');
                     },
-                    error: function(data) {
+                    error: function (data) {
                         console.log(data);
                     }
                 });
@@ -140,16 +134,16 @@
         /**
          *  edit country
          */
-        function bindEditCountryEvent() {
-            jQuery(".edit_country").on('click', function(e) {
+        function bindEditMomModeEvent() {
+            jQuery(".edit_mom_mode").on('click', function (e) {
                 jQuery.ajax({
-                    url: "{{ url('manage_country') }}",
+                    url: "{{ url('manage_mom_mode') }}",
                     method: 'POST',
                     data: {
                         "_token": "{{ csrf_token() }}",
                         id: $(e.target).closest('a').attr('data-id'),
                     },
-                    beforeSend: function() {
+                    beforeSend: function () {
                         swal({
                             title: "info",
                             text: "Please Wait, Your Request has been processed!",
@@ -159,12 +153,12 @@
                             closeOnEsc: false
                         });
                     },
-                    success: function(data) {
+                    success: function (data) {
                         swal.close();
-                        jQuery("#manageCountryModalBox").html(data);
-                        jQuery("#manageCountryModal").modal('show');
+                        jQuery("#manageMOMModeModalBox").html(data);
+                        jQuery("#manageMomModeModal").modal('show');
                     },
-                    error: function(data) {
+                    error: function (data) {
                         console.log(data);
                     }
                 });
@@ -174,27 +168,27 @@
         /**
          *  delete country
          */
-        function bindDeleteCountryEvent() {
-            jQuery('.delete_country').on('click', function(e) {
+        function bindDeleteMomModeEvent() {
+            jQuery('.delete_mom_mode').on('click', function (e) {
                 swal({
-                    title: "Delete Country?",
+                    title: "Delete Mode Of Meeting?",
                     text: "Once deleted, you will not be able to recover this record!",
                     icon: "warning",
-                    dangerMode: true,
                     buttons: ['No', 'Yes'],
                     confirmButtonText: 'Yes',
                     denyButtonText: 'No',
+                    dangerMode: true,
                 }).then((confirmed) => {
                     if (confirmed) {
                         jQuery.ajax({
-                            url: "{{ url('delete_country') }}",
+                            url: "{{ url('delete_mom_mode') }}",
                             method: 'POST',
                             dataType: 'JSON',
                             data: {
                                 "_token": "{{ csrf_token() }}",
                                 id: jQuery(e.target).closest('a').attr('data-id'),
                             },
-                            beforeSend: function() {
+                            beforeSend: function () {
                                 swal({
                                     title: "info",
                                     text: "Please Wait, Your Request has been processed!",
@@ -204,16 +198,15 @@
                                     closeOnEsc: false
                                 });
                             },
-                            success: function(data) {
+                            success: function (data) {
                                 if (data.status == true) {
                                     swal.close();
-                                    $('#countryDataTableContainer').show();
-                                    $('#noCountryDataTableContainer').hide();
-                                    jQuery("#manageCountryModal").modal('hide');
-                                    if (!$.fn.dataTable.isDataTable('#country_table')) {
+
+                                    jQuery("#manageMomModeModal").modal('hide');
+                                    if (!$.fn.dataTable.isDataTable('#mom_mode_table')) {
                                         initCountryTable();
                                     } else {
-                                        jQuery('#country_table').DataTable().ajax.reload();
+                                        jQuery('#mom_mode_table').DataTable().ajax.reload();
                                     }
 
                                     swal({
@@ -228,8 +221,8 @@
                                     swal("Error", data.message, "error");
                                 }
                             },
-                            error: function(data) {
-                                console.log(data);
+                            error: function (data) {
+                                // console.log(data);
                             }
                         });
                     } else {

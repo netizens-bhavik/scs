@@ -34,6 +34,7 @@ class CountryController extends Controller
             ->where('is_deleted', '=', null)
             ->where(function ($query) use ($searchValue) {
                 $query->where('country_name', 'like', '%' . $searchValue . '%');
+                $query->orWhere('country_code', 'like', '%' . $searchValue . '%');
             })
             ->count();
 
@@ -42,6 +43,7 @@ class CountryController extends Controller
             ->where('is_deleted', '=', null)
             ->where(function ($query) use ($searchValue) {
                 $query->where('country_name', 'like', '%' . $searchValue . '%');
+                $query->orWhere('country_code', 'like', '%' . $searchValue . '%');
             })
             ->select('*')
             ->skip($start)
@@ -75,6 +77,7 @@ class CountryController extends Controller
             $dataArr[] = array(
                 "id" => $i++,
                 "country_name" => $record->country_name,
+                "country_code" => $record->country_code,
                 "action" => $action_btn,
             );
         }
@@ -109,6 +112,7 @@ class CountryController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|max:255',
+            'country_code' => 'required|max:255',
         ]);
 
         if ($validator->fails()) {
@@ -121,11 +125,13 @@ class CountryController extends Controller
 
             $user = Auth::user();
             $countryName = preg_replace("/\s+/", " ", ucwords(strtolower($request->name)));
+            $country_code = preg_replace("/\s+/", " ", ucwords(strtolower($request->country_code)));
 
             if (Country::find($request->id)) {
 
                 $countryData = [
                     'country_name' => $countryName,
+                    'country_code' => $request->country_code,
                     'modified_by' => $user->id,
                 ];
                 Country::whereId($request->id)->update($countryData);
@@ -146,16 +152,19 @@ class CountryController extends Controller
                 ]);
             } else {
 
-                $countryCheck = Country::where('country_name', $countryName)->where('is_deleted', null)->first();
+                $countryCheck = Country::where('country_name', $countryName)
+                    ->orWhere('country_code', $country_code)
+                    ->where('is_deleted', null)->first();
                 if ($countryCheck) {
                     return response()->json([
                         'status' => false,
-                        'errors' => ["Country Name already exists"],
+                        'errors' => ["Country Name/Code already exists"],
                     ]);
                 }
 
                 $response = Country::create([
                     'country_name' => $countryName,
+                    'country_code' => $country_code,
                     'created_by' => $user->id,
                 ]);
 

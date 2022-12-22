@@ -212,6 +212,7 @@ class SystemStatsController extends Controller
             ->leftJoin('clients', 'moms.client_id', '=', 'clients.id')
             ->leftJoin('users', 'clients.manage_by', '=', 'users.id')
             ->leftJoin('users as shared_by', 'moms.shared_user_by', '=', 'shared_by.id')
+            ->leftJoin('mom_modes', 'moms.mode_of_meeting', '=', 'mom_modes.id')
             ->where('moms.is_deleted', '=', null)
             ->where('moms.followup_status', '=', null)
             ->where(function ($query) use ($mom_followups_country_id) {
@@ -237,7 +238,7 @@ class SystemStatsController extends Controller
                     $query->where('moms.next_followup_date', '<=', $mom_followups_end_date);
                 }
             })
-            ->select('moms.*', 'clients.company_name', 'clients.id as client_id', 'users.name as user_name', 'shared_by.name as shared_by_name')
+            ->select('moms.*', 'clients.company_name', 'clients.id as client_id', 'users.name as user_name', 'shared_by.name as shared_by_name', 'mom_modes.mode_name as mode_of_meeting_name')
             ->orderBy($columnName, $columnSortOrder)
             ->skip($start)
             ->take($rowperpage)
@@ -273,6 +274,7 @@ class SystemStatsController extends Controller
         $totalRecordswithFilter = DB::table('moms')
             ->leftJoin('clients', 'moms.client_id', '=', 'clients.id')
             ->leftJoin('users', 'clients.manage_by', '=', 'users.id')
+            ->leftJoin('mom_modes', 'moms.mode_of_meeting', '=', 'mom_modes.id')
             ->where('moms.is_deleted', '=', null)
             ->where('moms.followup_status', '=', null)
             ->where(function ($query) use ($mom_followups_country_id) {
@@ -364,6 +366,7 @@ class SystemStatsController extends Controller
                 "company_name" => $company_modal,
                 "contact_person" => $record['contact_person'],
                 "action" => $action_btn,
+                "mode_of_meeting_name" => $record['mode_of_meeting_name'],
                 "shared_by_name" => $record['shared_by_name'] ?? '-',
             );
         }

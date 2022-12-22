@@ -207,7 +207,7 @@
                                                 </div>
                                                 <div class="content">
                                                     <h5>Mobile No</h5>
-                                                    <h6>{{ $temp_leads['contact_person_phone'] ?? 'N/A' }}</h6>
+                                                    <h6>{{$temp_leads['country_code']}} - {{ $temp_leads['contact_person_phone'] ?? 'N/A' }}</h6>
                                                 </div>
                                             </div>
                                             <div class="app-card">
@@ -291,6 +291,17 @@
                                                 </div>
                                             </div>
                                         </div>
+
+                                        <div class="col-md-12 col-xl-12 col-xxl-12 mb-12">
+                                            <div class="app-card">
+                                                <div class="content">
+                                                    <h5 class="text-secondary text-dark h6 mb-1">Last Call Remark : </h5>
+                                                    <h6 class="text-primary h6">
+                                                        {!!  nl2br($temp_leads['last_call_comment'] ?? 'N/A' ) !!}
+                                                    </h6>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                                 <form action="javascript:void(0);" id="soft_calling_outgoing_frm" method="POST"
@@ -337,7 +348,6 @@
                                                     <span class="text-danger" id="sw_error_message"></span>
                                                 </div>
                                                 <div class="col-sm-6 col-xl-12 col-xxl-6">
-                                                    <span class="text-danger">*</span>
                                                     <label for="cell_no">Cell No :</label>
                                                     <input type="text" class="form-control" name="cell_no"
                                                         id="cell_no" placeholder="Cell No">
@@ -346,7 +356,6 @@
                                             </div>
                                             <div class="row mt-3">
                                                 <div class="col-sm-6 col-xl-12 col-xxl-6 mb-0 mb-xl-2 mb-xxl-0">
-                                                    <span class="text-danger">*</span>
                                                     <label for="email_id">Email Id :</label>
                                                     <input type="text" class="form-control" name="email_id"
                                                         id="email_id" placeholder="Email Id">
@@ -371,6 +380,12 @@
                                                     <span class="text-danger" id="rr_error_message"></span>
                                                 </div>
                                             </div>
+                                        </div>
+
+                                        <div class="col-12 mt-3">
+                                            <label for="remarks">Remarks :</label>
+                                            <textarea class="form-control" name="remarks" id="remarks" placeholder="Remarks"></textarea>
+                                            <span class="text-danger" id="r_error_message"></span>
                                         </div>
 
                                         <div class="col-md-12 mt-3">
@@ -508,29 +523,29 @@
                     $('#sw_error_message').html('');
                 }
                 var cell_no = $('#cell_no').val();
-                if (cell_no == '') {
-                    $('#cn_error_message').html('Please enter cell number');
-                } else {
-                    if (cell_no < 0) {
-                        $('#cn_error_message').html('Please enter a valid cell number');
-                        return false;
-                    } else {
-                        if (!$.isNumeric(cell_no)) {
-                            $('#cn_error_message').html('Please enter a valid cell number');
-                            return false;
-                        } else {
-                            $('#cn_error_message').html('');
-                        }
-                    }
-                    //$('#cn_error_message').html('Please enter a valid cell number');
-                    //return false;
-                }
+                // if (cell_no == '') {
+                //     $('#cn_error_message').html('Please enter cell number');
+                // } else {
+                //     if (cell_no < 0) {
+                //         $('#cn_error_message').html('Please enter a valid cell number');
+                //         return false;
+                //     } else {
+                //         if (!$.isNumeric(cell_no)) {
+                //             $('#cn_error_message').html('Please enter a valid cell number');
+                //             return false;
+                //         } else {
+                //             $('#cn_error_message').html('');
+                //         }
+                //     }
+                //     //$('#cn_error_message').html('Please enter a valid cell number');
+                //     //return false;
+                // }
                 var email_id = $('#email_id').val();
-                if (email_id == '') {
-                    $('#ei_error_message').html('Please enter email id');
-                } else {
-                    $('#ei_error_message').html('');
-                }
+                // if (email_id == '') {
+                //     $('#ei_error_message').html('Please enter email id');
+                // } else {
+                //     $('#ei_error_message').html('');
+                // }
                 var requirement = $('.requirement-radio:checked').val()
                 if (requirement == '') {
                     $('#r_error_message').html('Please select any requirement');
@@ -546,7 +561,7 @@
                     }
                 }
 
-                if (spoken_with == '' || cell_no == '' || email_id == '' || requirement == '' ||
+                if (spoken_with == '' || requirement == '' ||
                     requirement_remarks == '') {
                     return false;
                 }

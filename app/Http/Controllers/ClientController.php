@@ -13,12 +13,20 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\SystemLogController;
+use App\Http\Controllers\MOMController;
 
 class ClientController extends Controller
 {
     //
     function getClientList(Request $request)
     {
+
+        $user = Auth::user();
+
+        $MOMController = new MOMController;
+        $userIds = $MOMController->getHirarchyUser($user->id);
+        $userIds[] = $user->id;
+
         $draw = $request->get('draw');
         $start = $request->get("start");
         $rowperpage = $request->get("length"); // total number of rows per page
@@ -34,12 +42,16 @@ class ClientController extends Controller
         $searchValue = $searchArr['value']; // Search value
 
         // Total records
-        $totalRecords = Client::select('count(*) as allcount')->where('is_deleted', null)->count();
+        $totalRecords = Client::select('count(*) as allcount')
+            ->where('is_deleted', null)
+            ->whereIn('manage_by', $userIds)
+            ->count();
         $totalRecordswithFilter = Client::select('count(*) as allcount')
             ->where('is_deleted', null)
             ->with('country')
             ->with('city')
             ->with('industry')
+            ->whereIn('manage_by', $userIds)
             ->orWhereHas('country', function ($query) use ($searchValue) {
                 $query->where('country_name', 'like', '%' . $searchValue . '%');
             })
@@ -51,6 +63,7 @@ class ClientController extends Controller
             ->leftJoin('cities', 'cities.id', '=', 'clients.city_id')
             ->leftJoin('industries', 'industries.id', '=', 'clients.industry_id')
             ->where('clients.is_deleted', '=', null)
+            ->whereIn('manage_by', $userIds)
             ->where(function ($query) use ($searchValue) {
                 $query->where('company_name', 'like', '%' . $searchValue . '%')
                     ->orWhere('country_name', 'like', '%' . $searchValue . '%')

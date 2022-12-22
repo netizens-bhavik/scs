@@ -31,7 +31,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="modalFullTitle">
-                    {{ isset($mom['id']) && !empty($mom['id']) ? 'Edit MOM' : 'Add MOM' }}                    
+                    {{ isset($mom['id']) && !empty($mom['id']) ? 'Edit MOM' : 'Add MOM' }}
                 </h5>
                 <button type="button" class="btn-close bm_modal_close" data-bs-dismiss="modal"
                         aria-label="Close" title="Close"></button>
@@ -45,8 +45,8 @@
                         if (isset($dashboard_flag) && isset($mom['follow_up_id'])) {
                             $follow_up_id = $mom['follow_up_id'] ?? '';
                             echo '<input type="hidden" name="follow_up_id" id="follow_up_id" value="'.$follow_up_id.'">';
-                        }                   
-                    @endphp                    
+                        }
+                    @endphp
                     <div class="row">
                         <div class="col-md-4 mb-3">
                             <span class="text-danger">*</span>
@@ -166,6 +166,23 @@
                             </select>
                         </div>
                     </div>
+
+                    <div class="row" id="meeting_mode">
+                        <div class="col-md-6 mb-3">
+                            <span class="text-danger">*</span>
+                            <label for="meeting_mode_id" class="form-label">Mode Of Meeting</label>
+                            <select id="meeting_mode_id" name="meeting_mode_id" class="form-select">
+                                <option value="">Select Mode</option>
+                                @foreach ($meeting_modes as $value)
+                                    <option value="{{ $value['id'] }}"
+                                        {{ isset($mom['mode_of_meeting']) && $mom['mode_of_meeting'] == $value['id'] ? 'selected' : '' }}>
+                                        {{ strtoupper($value['mode_name']) }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+
                     @php
                         if (isset($mom['mom_type']) && $mom['mom_type'] == 4) {
                             $dstr = 'none';
@@ -570,6 +587,9 @@
             bde_feedback: {
                 required: true
             },
+            meeting_mode_id: {
+                required: true
+            },
             share_user_id: {
                 required: function () {
                     if ($(".followup:checked").val() == 2 && $("#share_user_id").val() == '') {
@@ -615,6 +635,9 @@
             },
             minutes_of_meeting: {
                 required: "Minutes of Meeting is required",
+            },
+            meeting_mode_id: {
+                required: "Meeting Mode is required",
             },
             bde_feedback: {
                 required: "Feedback is required",

@@ -41,6 +41,11 @@ class DemoUsers extends Seeder
             'industry_add',
             'industry_edit',
             'industry_delete',
+            'manage_mom_mode',
+            'mom_mode_view',
+            'mom_mode_add',
+            'mom_mode_edit',
+            'mom_mode_delete',
             'manage_soft_calling',
             'soft_call_upload',
             'soft_call_add',
@@ -92,7 +97,7 @@ class DemoUsers extends Seeder
         //     'city_id' => '1',
         //     'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
         // ])->assignRole('general manager');
-    
+
         // User::create([
         //     'name' => 'BDM User',
         //     'email' => 'bdm@bdm.com',

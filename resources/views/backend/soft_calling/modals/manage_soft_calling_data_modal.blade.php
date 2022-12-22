@@ -116,7 +116,7 @@
                             </div>
                             <div class="form-group col-sm-6 mt-3">
                                 <label for="contact_phone_number">Phone Number</label>
-                                <input type="number" class="form-control" name="contact_phone_number"
+                                <input type="text" class="form-control" name="contact_phone_number"
                                        id="contact_phone_number" value="{{ $temp_lead['company_phone_no'] ?? '' }}"
                                        placeholder="Enter Phone Number">
                             </div>

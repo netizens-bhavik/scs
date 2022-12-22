@@ -73,6 +73,15 @@
                             </a>
                         </li>
                     @endcanany
+
+                    @canany(['mom_mode_view', 'mom_mode_add', 'mom_mode_edit', 'mom_mode_delete'])
+                        <li class="menu-item">
+                            <a href="{{ url('/mom_modes') }}" class="menu-link">
+                                <div data-i18n="Connections">MOM Modes</div>
+                            </a>
+                        </li>
+                    @endcanany
+
                 </ul>
             </li>
         @endcanany

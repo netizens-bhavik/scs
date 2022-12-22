@@ -2,6 +2,7 @@
 
 
 use App\Http\Controllers\EmailMaster;
+use App\Http\Controllers\MomModeController;
 use App\Http\Controllers\SystemStatsController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
@@ -162,6 +163,18 @@ Route::group(['middleware' => 'prevent-back-history'], function () {
             'permission:manage_industries|manage_masters|industry_view|industry_add|industry_edit|industry_delete'
         ])
         ->name('industries_master');
+
+    Route::get(
+        '/mom_modes',
+        [DashboardController::class, 'mom_modes']
+    )
+        ->middleware([
+            'auth', 'role:administrator|director|general manager|bde|bdm|softcaller',
+            'permission:manage_mom_mode|manage_masters|mom_mode_view|mom_mode_add|mom_mode_edit|mom_mode_delete'
+        ])
+        ->name('mom_modes');
+
+
 
     Route::get(
         '/import',
@@ -333,12 +346,47 @@ Route::group(['middleware' => 'prevent-back-history'], function () {
         ->middleware(['auth', 'role:administrator|director|general manager|bde|bdm|softcaller', 'permission:manage_industries|manage_masters|industry_add|industry_edit'])
         ->name('save_industry');
 
+
     Route::post(
         '/delete_industry',
         [IndustryController::class, 'deleteIndustry']
     )
         ->middleware(['auth', 'role:administrator|director|general manager|bde|bdm|softcaller', 'permission:manage_industries|manage_masters|industry_delete'])
         ->name('delete_industry');
+
+
+
+    Route::post(
+        '/get_mom_mode_list',
+        [MomModeController::class, 'getMomModeList']
+    )
+        ->middleware(['auth', 'role:administrator|director|general manager|bde|bdm|softcaller', 'permission:manage_mom_mode|manage_masters|mom_mode_view|mom_mode_edit|mom_mode_delete'])
+        ->name('get_mom_mode_list');
+
+    Route::post(
+        '/manage_mom_mode',
+        [MomModeController::class, 'manageMomMode']
+    )
+        ->middleware(['auth', 'role:administrator|director|general manager|bde|bdm|softcaller', 'permission:manage_mom_mode|manage_masters|mom_mode_add|mom_mode_edit'])
+        ->name('manage_mom_mode');
+
+    Route::post(
+        '/save_mom_mode',
+        [MomModeController::class, 'saveMomMode']
+    )
+        ->middleware(['auth', 'role:administrator|director|general manager|bde|bdm|softcaller', 'permission:manage_mom_mode|manage_masters|industry_add|mom_mode_edit'])
+        ->name('save_mom_mode');
+
+
+    Route::post(
+        '/delete_mom_mode',
+        [MomModeController::class, 'deleteMomMode']
+    )
+        ->middleware(['auth', 'role:administrator|director|general manager|bde|bdm|softcaller', 'permission:manage_mom_mode|manage_masters|mom_mode_delete'])
+        ->name('delete_mom_mode');
+
+
+
 
     //City master routes
     Route::post(

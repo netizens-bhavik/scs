@@ -1,0 +1,19 @@
+{
+    "sqltools.connections": [
+        {
+            "mssqlOptions": {
+                "appName": "SQLTools",
+                "useUTC": true,
+                "encrypt": true
+            },
+            "previewLimit": 50,
+            "server": "43.254.28.106",
+            "port": 1433,
+            "driver": "MSSQL",
+            "name": "crmnewalfa",
+            "database": "crmnewalfa",
+            "username": "crmnewalfa",
+            "password": "crmalfa123#@!"
+        }
+    ]
+}

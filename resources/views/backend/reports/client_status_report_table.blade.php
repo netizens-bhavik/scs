@@ -39,7 +39,7 @@
             scrollX: true,
             columnDefs: [{
                 orderable: false,
-                targets: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+                targets: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10]
             }],
             lengthChange: false,
             ajax: {
@@ -50,6 +50,7 @@
                     d.client_status_report_city_id = "{{ $data['city_id'] }}";
                     d.client_status_report_user_id = "{{ $data['user_id'] }}";
                     d.client_status_report_activity_status = "{{ $data['activity_status'] }}";
+                    d.client_status_report_industry_id = "{{ $data['industry_id'] }}";
                 }
             },
             columns: [

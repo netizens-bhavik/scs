@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Exports\ExportReports;
+use App\Models\Industry;
 use App\Models\Mom;
 use App\Models\City;
 use App\Models\User;
@@ -501,7 +502,6 @@ class ReportMaster extends Controller
             );
         }
 
-       
 
         if (count((array)$dataArr) > 0) {
             $request->session()->put('export_report_data', $dataArr);
@@ -711,7 +711,7 @@ class ReportMaster extends Controller
                 );
             }
 
-           
+
             if (count((array)$dataArr) > 0) {
                 $request->session()->put('export_report_data', $dataArr);
                 $fileName = 'Call_Status_Report_' . date('Ymd') . '.xlsx';
@@ -1216,7 +1216,7 @@ class ReportMaster extends Controller
                     (string)$record['total'],
                 );
             }
-           
+
             if (count((array)$dataArr) > 0) {
                 $request->session()->put('export_report_data', $dataArr);
                 $fileName = 'Call_Status_UW_Report_' . date('Ymd') . '.xlsx';
@@ -1495,9 +1495,14 @@ class ReportMaster extends Controller
 
         $user_list = User::whereIn('id', $userIds)->where('is_deleted', null)->get()->pluck('name', 'id')->toArray();
 
-        $all_countries = Country::all()->toArray();
+        $all_countries = Country::all()
+            ->where('is_deleted', null)
+            ->toArray();
+        $all_industries = Industry::all()
+            ->where('is_deleted', null)
+            ->toArray();
 
-        return view('backend.reports.client_report', compact('selected_menu', 'all_countries', 'user_list'));
+        return view('backend.reports.client_report', compact('selected_menu', 'all_countries', 'user_list', 'all_industries'));
     }
 
     public function client_status_report_export(Request $request)
@@ -1507,6 +1512,7 @@ class ReportMaster extends Controller
         $client_status_report_city_id = $request->client_status_report_city;
         $client_status_report_user_id = $request->client_status_report_user;
         $client_status_report_activity_status = $request->client_status_report_activity;
+        $client_status_report_industry_id = $request->client_status_report_industry;
 
         // if ($client_status_report_country_id != '' || $client_status_report_city_id != '' || $client_status_report_user_id != '' || $client_status_report_activity_status != '') {
         // } else {
@@ -1530,14 +1536,14 @@ class ReportMaster extends Controller
         } else {
         }
 
-        $client_status_data = DB::table('clients')
+        $client_status_data = DB::table('moms')
+            ->join('clients', 'clients.id', '=', 'moms.client_id')
             ->leftJoin('countries', 'countries.id', '=', 'clients.country_id')
             ->leftJoin('cities', 'cities.id', '=', 'clients.city_id')
             ->leftJoin('industries', 'industries.id', '=', 'clients.industry_id')
-            ->leftJoin('moms', 'moms.client_id', '=', 'clients.id')
             ->leftJoin('users', 'users.id', '=', 'clients.manage_by')
             ->where('clients.is_deleted', '=', null)
-            ->where(function ($query) use ($client_status_report_country_id, $client_status_report_city_id, $client_status_report_user_id, $data_from_date, $data_to_date) {
+            ->where(function ($query) use ($client_status_report_country_id, $client_status_report_city_id, $client_status_report_user_id, $client_status_report_industry_id, $data_from_date, $data_to_date, $client_status_report_activity_status) {
                 if ($client_status_report_country_id != '') {
                     $query->where('clients.country_id', '=', $client_status_report_country_id);
                 }
@@ -1547,11 +1553,32 @@ class ReportMaster extends Controller
                 if ($client_status_report_user_id != '') {
                     $query->where('clients.manage_by', '=', $client_status_report_user_id);
                 }
+                if ($client_status_report_industry_id != '') {
+                    $query->where('clients.industry_id', '=', $client_status_report_industry_id);
+                }
+                if ($client_status_report_activity_status != '' && $client_status_report_activity_status == '30p') {
+                    $query->whereBetween('moms.updated_at', [$data_from_date, $data_to_date]);
+                }
+                if ($client_status_report_activity_status != '' && $client_status_report_activity_status == '30n') {
+                    $query->whereNotBetween('moms.updated_at', [$data_from_date, $data_to_date]);
+                }
+                if ($client_status_report_activity_status == '') {
+                }
             })
             ->whereDate('moms.updated_at', '>=', $data_from_date)
             ->whereDate('moms.updated_at', '<=', $data_to_date)
-            ->whereIn('clients.manage_by', $userIds)
-            ->select('clients.*', 'countries.country_name', 'cities.city_name', 'industries.industry_name', 'moms.updated_at as last_mom_date', 'users.name as manage_by_name')
+            ->groupBy('moms.client_id')
+            ->select( 'moms.client_id',DB::raw('max(moms.updated_at) as last_mom_date'),
+                DB::raw('max(clients.id) as id'),
+                DB::raw('max(clients.company_name) as company_name'),
+                DB::raw('max(countries.country_name) as country_name'),
+                DB::raw('max(cities.city_name) as city_name'),
+                DB::raw('max(industries.industry_name) as industry_name'),
+                DB::raw('max(users.name) as manage_by_name'),
+                DB::raw('max(clients.address) as address'),
+                DB::raw('max(clients.phone_no) as phone_no'),
+                DB::raw('max(clients.email) as email'),
+            )
             ->get()->toArray();
 
         $records = $client_status_data;
@@ -1562,7 +1589,7 @@ class ReportMaster extends Controller
         }
 
         $dataArr = array();
-        $dataArr[]=array('Country','Company Name','Address','City','Phone No','Email','Industry','BDE Name','Last Mom Date');
+        $dataArr[] = array('Country', 'Company Name', 'Address', 'City', 'Phone No', 'Email', 'Industry', 'BDE Name', 'Last Mom Date');
         foreach ($records as $record) {
             $dataArr[] = array(
                 (string)$record->country_name,
@@ -1576,7 +1603,7 @@ class ReportMaster extends Controller
                 (string)date('d/m/Y', strtotime($record->last_mom_date)),
             );
         }
-       
+
         if (count((array)$dataArr) > 0) {
             $request->session()->put('export_report_data', $dataArr);
             $fileName = 'Client_Status_Report_' . date('Ymd') . '.xlsx';
@@ -1616,6 +1643,7 @@ class ReportMaster extends Controller
         $client_status_report_city_id = $request->client_status_report_city_id;
         $client_status_report_user_id = $request->client_status_report_user_id;
         $client_status_report_activity_status = $request->client_status_report_activity_status;
+        $client_status_report_industry_id = $request->client_status_report_industry_id;
 
         $data_from_date = date('Y-m-d H:i:s.000', strtotime('-30 days'));
         $data_to_date = date('Y-m-d H:i:s.000');
@@ -1644,19 +1672,18 @@ class ReportMaster extends Controller
         $searchArr = $request->get('search');
 
         $columnIndex = isset($columnIndexArr[0]['column']) ? $columnIndexArr[0]['column'] : ''; // Column index
-        $columnName = !empty($columnIndex) ? $columnNameArr[$columnIndex]['data'] : 'moms.id'; // Column name
+        $columnName = !empty($columnIndex) ? $columnNameArr[$columnIndex]['data'] : 'moms.client_id'; // Column name
         $columnSortOrder = !empty($columnIndex) ? $orderArr[0]['dir'] : 'Asc'; // asc or desc
         $searchValue = $searchArr['value']; // Search value
 
-
-        $client_status_data = DB::table('clients')
+        $client_status_data = DB::table('moms')
+            ->join('clients', 'clients.id', '=', 'moms.client_id')
             ->leftJoin('countries', 'countries.id', '=', 'clients.country_id')
             ->leftJoin('cities', 'cities.id', '=', 'clients.city_id')
             ->leftJoin('industries', 'industries.id', '=', 'clients.industry_id')
-            ->leftJoin('moms', 'moms.client_id', '=', 'clients.id')
             ->leftJoin('users', 'users.id', '=', 'clients.manage_by')
             ->where('clients.is_deleted', '=', null)
-            ->where(function ($query) use ($client_status_report_country_id, $client_status_report_city_id, $client_status_report_user_id, $data_from_date, $data_to_date, $client_status_report_activity_status) {
+            ->where(function ($query) use ($client_status_report_country_id, $client_status_report_city_id, $client_status_report_user_id, $client_status_report_industry_id, $data_from_date, $data_to_date, $client_status_report_activity_status) {
                 if ($client_status_report_country_id != '') {
                     $query->where('clients.country_id', '=', $client_status_report_country_id);
                 }
@@ -1665,6 +1692,9 @@ class ReportMaster extends Controller
                 }
                 if ($client_status_report_user_id != '') {
                     $query->where('clients.manage_by', '=', $client_status_report_user_id);
+                }
+                if ($client_status_report_industry_id != '') {
+                    $query->where('clients.industry_id', '=', $client_status_report_industry_id);
                 }
                 if ($client_status_report_activity_status != '' && $client_status_report_activity_status == '30p') {
                     $query->whereBetween('moms.updated_at', [$data_from_date, $data_to_date]);
@@ -1677,21 +1707,32 @@ class ReportMaster extends Controller
             })
             ->whereDate('moms.updated_at', '>=', $data_from_date)
             ->whereDate('moms.updated_at', '<=', $data_to_date)
-            ->whereIn('clients.manage_by', $userIds)
-            ->select('clients.*', 'countries.country_name', 'cities.city_name', 'industries.industry_name', 'moms.updated_at as last_mom_date', 'users.name as manage_by_name')
+            ->groupBy('moms.client_id')
+            ->select( 'moms.client_id',DB::raw('max(moms.updated_at) as last_mom_date'),
+                DB::raw('max(clients.id) as id'),
+                DB::raw('max(clients.company_name) as company_name'),
+                DB::raw('max(countries.country_name) as country_name'),
+                DB::raw('max(cities.city_name) as city_name'),
+                DB::raw('max(industries.industry_name) as industry_name'),
+                DB::raw('max(users.name) as manage_by_name'),
+                DB::raw('max(clients.address) as address'),
+                DB::raw('max(clients.phone_no) as phone_no'),
+                DB::raw('max(clients.email) as email'),
+            )
+            ->latest('last_mom_date')
             ->orderBy($columnName, $columnSortOrder)
             ->skip($start)
             ->take($rowperpage)
             ->get()->toArray();
 
-        $totalRecords = DB::table('clients')
+        $totalRecords = DB::table('moms')
+            ->join('clients', 'clients.id', '=', 'moms.client_id')
             ->leftJoin('countries', 'countries.id', '=', 'clients.country_id')
             ->leftJoin('cities', 'cities.id', '=', 'clients.city_id')
             ->leftJoin('industries', 'industries.id', '=', 'clients.industry_id')
-            ->leftJoin('moms', 'moms.client_id', '=', 'clients.id')
             ->leftJoin('users', 'users.id', '=', 'clients.manage_by')
             ->where('clients.is_deleted', '=', null)
-            ->where(function ($query) use ($client_status_report_country_id, $client_status_report_city_id, $client_status_report_user_id, $data_from_date, $data_to_date, $client_status_report_activity_status) {
+            ->where(function ($query) use ($client_status_report_country_id, $client_status_report_city_id, $client_status_report_user_id, $client_status_report_industry_id, $data_from_date, $data_to_date, $client_status_report_activity_status) {
                 if ($client_status_report_country_id != '') {
                     $query->where('clients.country_id', '=', $client_status_report_country_id);
                 }
@@ -1700,6 +1741,9 @@ class ReportMaster extends Controller
                 }
                 if ($client_status_report_user_id != '') {
                     $query->where('clients.manage_by', '=', $client_status_report_user_id);
+                }
+                if ($client_status_report_industry_id != '') {
+                    $query->where('clients.industry_id', '=', $client_status_report_industry_id);
                 }
                 if ($client_status_report_activity_status != '' && $client_status_report_activity_status == '30p') {
                     $query->whereBetween('moms.updated_at', [$data_from_date, $data_to_date]);
@@ -1712,18 +1756,29 @@ class ReportMaster extends Controller
             })
             ->whereDate('moms.updated_at', '>=', $data_from_date)
             ->whereDate('moms.updated_at', '<=', $data_to_date)
-            ->whereIn('clients.manage_by', $userIds)
-            ->select('clients.*', 'countries.country_name', 'cities.city_name', 'industries.industry_name', 'moms.updated_at as last_mom_date', 'users.name as manage_by_name')
+            ->groupBy('moms.client_id')
+            ->select( 'moms.client_id',DB::raw('max(moms.updated_at) as last_mom_date'),
+                DB::raw('max(clients.id) as id'),
+                DB::raw('max(clients.company_name) as company_name'),
+                DB::raw('max(countries.country_name) as country_name'),
+                DB::raw('max(cities.city_name) as city_name'),
+                DB::raw('max(industries.industry_name) as industry_name'),
+                DB::raw('max(users.name) as manage_by_name'),
+                DB::raw('max(clients.address) as address'),
+                DB::raw('max(clients.phone_no) as phone_no'),
+                DB::raw('max(clients.email) as email'),
+            )
+            ->orderBy($columnName, $columnSortOrder)
             ->count();
 
-        $totalRecordswithFilter = DB::table('clients')
+        $totalRecordswithFilter = DB::table('moms')
+            ->join('clients', 'clients.id', '=', 'moms.client_id')
             ->leftJoin('countries', 'countries.id', '=', 'clients.country_id')
             ->leftJoin('cities', 'cities.id', '=', 'clients.city_id')
             ->leftJoin('industries', 'industries.id', '=', 'clients.industry_id')
-            ->leftJoin('moms', 'moms.client_id', '=', 'clients.id')
             ->leftJoin('users', 'users.id', '=', 'clients.manage_by')
             ->where('clients.is_deleted', '=', null)
-            ->where(function ($query) use ($client_status_report_country_id, $client_status_report_city_id, $client_status_report_user_id, $data_from_date, $data_to_date, $client_status_report_activity_status) {
+            ->where(function ($query) use ($client_status_report_country_id, $client_status_report_city_id, $client_status_report_user_id, $client_status_report_industry_id, $data_from_date, $data_to_date, $client_status_report_activity_status) {
                 if ($client_status_report_country_id != '') {
                     $query->where('clients.country_id', '=', $client_status_report_country_id);
                 }
@@ -1732,6 +1787,9 @@ class ReportMaster extends Controller
                 }
                 if ($client_status_report_user_id != '') {
                     $query->where('clients.manage_by', '=', $client_status_report_user_id);
+                }
+                if ($client_status_report_industry_id != '') {
+                    $query->where('clients.industry_id', '=', $client_status_report_industry_id);
                 }
                 if ($client_status_report_activity_status != '' && $client_status_report_activity_status == '30p') {
                     $query->whereBetween('moms.updated_at', [$data_from_date, $data_to_date]);
@@ -1744,8 +1802,19 @@ class ReportMaster extends Controller
             })
             ->whereDate('moms.updated_at', '>=', $data_from_date)
             ->whereDate('moms.updated_at', '<=', $data_to_date)
-            ->whereIn('clients.manage_by', $userIds)
-            ->select('clients.*', 'countries.country_name', 'cities.city_name', 'industries.industry_name', 'moms.updated_at as last_mom_date', 'users.name as manage_by_name')
+            ->groupBy('moms.client_id')
+            ->select( 'moms.client_id',DB::raw('max(moms.updated_at) as last_mom_date'),
+                DB::raw('max(clients.id) as id'),
+                DB::raw('max(clients.company_name) as company_name'),
+                DB::raw('max(countries.country_name) as country_name'),
+                DB::raw('max(cities.city_name) as city_name'),
+                DB::raw('max(industries.industry_name) as industry_name'),
+                DB::raw('max(users.name) as manage_by_name'),
+                DB::raw('max(clients.address) as address'),
+                DB::raw('max(clients.phone_no) as phone_no'),
+                DB::raw('max(clients.email) as email'),
+            )
+            ->orderBy($columnName, $columnSortOrder)
             ->count();
 
 
@@ -2242,6 +2311,7 @@ class ReportMaster extends Controller
         $client_status_report_country_id = $request->country_id;
         $client_status_report_city_id = $request->city_id;
         $client_status_report_user_id = $request->user_id;
+        $client_status_report_industry_id = $request->industry_id;
         $client_status_report_activity_status = $request->activity_status;
 
         // if ($client_status_report_country_id != '' || $client_status_report_city_id != '' || $client_status_report_user_id != '' || $client_status_report_activity_status != '') {
@@ -2266,14 +2336,14 @@ class ReportMaster extends Controller
         } else {
         }
 
-        $client_status_data = DB::table('clients')
+        $client_status_data = DB::table('moms')
+            ->join('clients', 'clients.id', '=', 'moms.client_id')
             ->leftJoin('countries', 'countries.id', '=', 'clients.country_id')
             ->leftJoin('cities', 'cities.id', '=', 'clients.city_id')
             ->leftJoin('industries', 'industries.id', '=', 'clients.industry_id')
-            ->leftJoin('moms', 'moms.client_id', '=', 'clients.id')
             ->leftJoin('users', 'users.id', '=', 'clients.manage_by')
             ->where('clients.is_deleted', '=', null)
-            ->where(function ($query) use ($client_status_report_country_id, $client_status_report_city_id, $client_status_report_user_id, $data_from_date, $data_to_date) {
+            ->where(function ($query) use ($client_status_report_country_id, $client_status_report_city_id, $client_status_report_user_id, $client_status_report_industry_id, $data_from_date, $data_to_date, $client_status_report_activity_status) {
                 if ($client_status_report_country_id != '') {
                     $query->where('clients.country_id', '=', $client_status_report_country_id);
                 }
@@ -2283,11 +2353,32 @@ class ReportMaster extends Controller
                 if ($client_status_report_user_id != '') {
                     $query->where('clients.manage_by', '=', $client_status_report_user_id);
                 }
+                if ($client_status_report_industry_id != '') {
+                    $query->where('clients.industry_id', '=', $client_status_report_industry_id);
+                }
+                if ($client_status_report_activity_status != '' && $client_status_report_activity_status == '30p') {
+                    $query->whereBetween('moms.updated_at', [$data_from_date, $data_to_date]);
+                }
+                if ($client_status_report_activity_status != '' && $client_status_report_activity_status == '30n') {
+                    $query->whereNotBetween('moms.updated_at', [$data_from_date, $data_to_date]);
+                }
+                if ($client_status_report_activity_status == '') {
+                }
             })
             ->whereDate('moms.updated_at', '>=', $data_from_date)
             ->whereDate('moms.updated_at', '<=', $data_to_date)
-            ->whereIn('clients.manage_by', $userIds)
-            ->select('clients.*', 'countries.country_name', 'cities.city_name', 'industries.industry_name', 'moms.updated_at as last_mom_date', 'users.name as manage_by_name')
+            ->groupBy('moms.client_id')
+            ->select( 'moms.client_id',DB::raw('max(moms.updated_at) as last_mom_date'),
+                DB::raw('max(clients.id) as id'),
+                DB::raw('max(clients.company_name) as company_name'),
+                DB::raw('max(countries.country_name) as country_name'),
+                DB::raw('max(cities.city_name) as city_name'),
+                DB::raw('max(industries.industry_name) as industry_name'),
+                DB::raw('max(users.name) as manage_by_name'),
+                DB::raw('max(clients.address) as address'),
+                DB::raw('max(clients.phone_no) as phone_no'),
+                DB::raw('max(clients.email) as email'),
+            )
             ->get()->toArray();
 
         $records = $client_status_data;

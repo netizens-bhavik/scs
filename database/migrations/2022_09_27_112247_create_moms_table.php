@@ -20,7 +20,7 @@ class CreateMomsTable extends Migration
            // $table->string('company_name')->nullable();
             $table->string('contact_person')->nullable();
             $table->text('minutes_of_meeting')->nullable();
-            $table->integer('mode_of_meeting')->nullable();
+           // $table->integer('mode_of_meeting')->nullable();
             $table->text('bde_feedback')->nullable();
             $table->enum('mom_type', ['1', '2', '3', '4'])->comment('1-followUp, 2-meeting, 3-requirementDiscussion, 4-close')->nullable();
             $table->enum('followup', ['1', '2', '3'])->comment('1-personal, 2-share, 3-next followup datetime')->nullable();

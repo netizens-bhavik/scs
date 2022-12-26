@@ -46,12 +46,6 @@ class Permissions extends Seeder
         Permission::create(['name' => 'industry_edit']);
         Permission::create(['name' => 'industry_delete']);
 
-        Permission::create(['name' => 'manage_mom_mode']);
-        Permission::create(['name' => 'mom_mode_view']);
-        Permission::create(['name' => 'mom_mode_add']);
-        Permission::create(['name' => 'mom_mode_edit']);
-        Permission::create(['name' => 'mom_mode_delete']);
-
         Permission::create(['name' => 'manage_soft_calling']);
         Permission::create(['name' => 'soft_call_upload']);
         Permission::create(['name' => 'soft_call_add']);

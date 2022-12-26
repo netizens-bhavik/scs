@@ -39,7 +39,7 @@ use App\Http\Controllers\GmLeadsMailListController;
 Route::get('/new-leads-cron', [GmLeadsMailListController::class, 'sendMail']);
 Route::get('/reminder-mail', [NotesMasterController::class, 'reminder_mail']);
 Route::get('/db_migrate', function () {
-    Artisan::call('migrate:fresh --seed');
+    Artisan::call('migrate');
     return "Migrated";
 });
 

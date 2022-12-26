@@ -227,8 +227,8 @@ class SoftCallController extends Controller
             $next_call_date = date('Y-m-d H:i:s', strtotime($request->next_call_date));
             $spoken_with = Auth::user()->id;
             $call_spoken_with = $request->spoken_with;
-            $cell_no = $request->cell_no;
-            $email_id = $request->email_id;
+            $cell_no = $request->cell_no??'';
+            $email_id = $request->email_id??'';
             $requirements = $request->requirement;
             $requirement_remarks = $request->requirement_remarks;
             $remarks = $request->remarks;
@@ -344,8 +344,8 @@ class SoftCallController extends Controller
                 $lead = new Leads();
                 $lead->temp_lead_id = $lead_id;
                 $lead->spoken_with = $call_spoken_with;
-                $lead->contact_no = $cell_no;
-                $lead->email = $email_id;
+                $lead->contact_no = $cell_no??'';
+                $lead->email = $email_id??'';
                 if ($requirements == 1) {
                     $lead->is_requirement = 1;
                     $lead->basic_requirement = $requirement_remarks;
@@ -481,8 +481,8 @@ class SoftCallController extends Controller
             $next_call_date = date('Y-m-d H:i:s', strtotime($request->next_call_date));
             $spoken_with = Auth::user()->id;
             $call_spoken_with = $request->spoken_with;
-            $cell_no = $request->cell_no;
-            $email_id = $request->email_id;
+            $cell_no = $request->cell_no??'';
+            $email_id = $request->email_id??'';
             $requirements = $request->requirement;
             $requirement_remarks = $request->requirement_remarks;
             $remarks = $request->remarks;
@@ -538,23 +538,23 @@ class SoftCallController extends Controller
                 }
             }
             if ($call_status == 3) {
-                if ($cell_no == null) {
-                    return response()->json(
-                        [
-                            'status' => false,
-                            'message' => 'Cell No is Required',
-                        ],
-                    );
-                }
-
-                if ($email_id == null) {
-                    return response()->json(
-                        [
-                            'status' => false,
-                            'message' => 'Email Id is Required',
-                        ],
-                    );
-                }
+//                if ($cell_no == null) {
+//                    return response()->json(
+//                        [
+//                            'status' => false,
+//                            'message' => 'Cell No is Required',
+//                        ],
+//                    );
+//                }
+//
+//                if ($email_id == null) {
+//                    return response()->json(
+//                        [
+//                            'status' => false,
+//                            'message' => 'Email Id is Required',
+//                        ],
+//                    );
+//                }
 
                 if ($requirements == null) {
                     return response()->json(
@@ -598,8 +598,8 @@ class SoftCallController extends Controller
                 $lead = new Leads();
                 $lead->temp_lead_id = $lead_id;
                 $lead->spoken_with = $call_spoken_with;
-                $lead->contact_no = $cell_no;
-                $lead->email = $email_id;
+                $lead->contact_no = $cell_no??'';
+                $lead->email = $email_id??'';
                 if ($requirements == 1) {
                     $lead->is_requirement = 1;
                     $lead->basic_requirement = $requirement_remarks;

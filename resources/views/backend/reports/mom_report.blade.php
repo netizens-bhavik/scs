@@ -45,24 +45,18 @@
                                     </div>
                                 </div>
 
-                                @role('general manager')
-                                    <input type="hidden" id="mom_report_country" name="mom_report_country"
-                                        value="{{ $user_country }}">
-                                @else
-                                    <div class="col-md-4 col-lg-3">
-                                        <div class="form-group">
-                                            <label for="mom_report_country">Country</label>
-                                            <select class="form-control form-select" id="mom_report_country"
+                                <div class="col-md-4 col-lg-3">
+                                    <div class="form-group">
+                                        <label for="mom_report_country">Country</label>
+                                        <select class="form-control form-select" id="mom_report_country"
                                                 name="mom_report_country">
-                                                <option value="">Select Country</option>
-                                                @foreach ($all_countries as $country)
-                                                    <option value="{{ $country['id'] }}">{{ $country['country_name'] }}</option>
-                                                @endforeach
-                                            </select>
-                                        </div>
+                                            <option value="">Select Country</option>
+                                            @foreach ($all_countries as $country)
+                                                <option value="{{ $country['id'] }}">{{ $country['country_name'] }}</option>
+                                            @endforeach
+                                        </select>
                                     </div>
-                                @endrole
-
+                                </div>
 
                             </div>
                             <div class="row g-3">

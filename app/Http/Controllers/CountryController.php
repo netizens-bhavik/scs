@@ -201,7 +201,7 @@ class CountryController extends Controller
         if ($countryCheck) {
             return response()->json([
                 "status" => false,
-                "message" => "Country can't deleted"
+                "message" => "Country is in use. You can't delete it."
             ]);
         }
 

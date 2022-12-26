@@ -39,11 +39,17 @@
                                                         id="client_status_report_country"
                                                         name="client_status_report_country">
                                                     <option value="">Select Country</option>
-                                                    @foreach ($all_countries as $country)
+{{--                                                    @foreach ($all_countries as $country)--}}
+{{--                                                        <option--}}
+{{--                                                            value="{{ $country['id'] }}">{{ $country['country_name'] }}--}}
+{{--                                                        </option>--}}
+{{--                                                    @endforeach--}}
+                                                    @foreach ($client_country_list as $key => $country)
                                                         <option
-                                                            value="{{ $country['id'] }}">{{ $country['country_name'] }}
+                                                            value="{{ $key }}">{{ $country}}
                                                         </option>
                                                     @endforeach
+
                                                 </select>
                                             </div>
                                         </div>
@@ -64,68 +70,87 @@
                                                         id="client_status_report_industry"
                                                         name="client_status_report_industry">
                                                     <option value="">Select Industry</option>
-                                                    @foreach ($all_industries as $industry)
+{{--                                                    @foreach ($all_industries as $industry)--}}
+{{--                                                        <option--}}
+{{--                                                            value="{{ $industry['id'] }}">{{ $industry['industry_name'] }}--}}
+{{--                                                        </option>--}}
+{{--                                                    @endforeach--}}
+
+                                                    @foreach ($client_industry_list as $key => $industry)
                                                         <option
-                                                            value="{{ $industry['id'] }}">{{ $industry['industry_name'] }}
+                                                            value="{{ $key }}">{{ $industry}}
                                                         </option>
                                                     @endforeach
                                                 </select>
                                             </div>
                                         </div>
-                                        <div class="col-sm-6 col-xl-3 col-xxl-2">
-                                            <div class="form-group">
-                                                <label for="client_status_report_user">User</label>
-                                                <select class="form-control form-select" id="client_status_report_user"
-                                                        name="client_status_report_user">
-                                                    <option value="">Select User</option>
-                                                    @foreach ($user_list as $key => $value)
-                                                        <option value="{{ $key }}">{{ $value }}</option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col-sm-6 col-xl-3 col-xxl-2">
-                                            <div class="form-group">
-                                                <label for="client_status_report_activity">Duration/Activity</label>
-                                                <select class="form-control form-select"
-                                                        id="client_status_report_activity"
-                                                        name="client_status_report_activity">
-                                                    <option value="">Select Activity</option>
-                                                    <option value="30p">Select Last 30 Days Active</option>
-                                                    <option value="30n">Select Last 30 Days Inactive</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col-sm-6 col-xl-3 col-xxl-2 align-self-end">
-                                            <div class="form-group mb-1">
-                                                <div class="d-flex">
-                                                    <div class="app-btn me-2">
-                                                        <button type="button" class="btn btn-primary btn-md"
-                                                                id="client_status_report_filter_btn" title="Filter">
-                                                            <i class='bx bx-filter-alt'></i>
-                                                            Filter
-                                                        </button>
-                                                    </div>
 
-                                                    <div class="app-btn me-2">
-                                                        <button type="button" class="btn btn-primary btn-md"
-                                                                id="client_status_report_filter_reset_btn"
-                                                                title="Reset">
-                                                            <i class='bx bx-reset'></i>
-                                                            Reset
-                                                        </button>
-                                                    </div>
-                                                    <div class="app-btn">
-                                                        <button type="submit" class="btn btn-primary btn-md"
-                                                                id="client_status_report_export_btn" title="Export"><i
-                                                                class='bx bxs-file-export'></i>
-                                                            Export
-                                                        </button>
+                                        @hasanyrole('bde|softcaller')
 
+                                        <input type="hidden" id="client_status_report_user"
+                                               name="client_status_report_user">
+
+                                        @else
+                                            <div class="col-sm-6 col-xl-3 col-xxl-2">
+                                                <div class="form-group">
+                                                    <label for="client_status_report_user">User</label>
+                                                    <select class="form-control form-select"
+                                                            id="client_status_report_user"
+                                                            name="client_status_report_user">
+                                                        <option value="">Select User</option>
+                                                        @foreach ($user_list as $key => $value)
+                                                            <option value="{{ $key }}">{{ $value }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            @endhasanyrole
+
+
+
+                                            <div class="col-sm-6 col-xl-3 col-xxl-2">
+                                                <div class="form-group">
+                                                    <label for="client_status_report_activity">Duration/Activity</label>
+                                                    <select class="form-control form-select"
+                                                            id="client_status_report_activity"
+                                                            name="client_status_report_activity">
+                                                        <option value="">Select Activity</option>
+                                                        <option value="30p">Select Last 30 Days Active</option>
+                                                        <option value="30n">Select Last 30 Days Inactive</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-6 col-xl-3 col-xxl-2 align-self-end">
+                                                <div class="form-group mb-1">
+                                                    <div class="d-flex">
+                                                        <div class="app-btn me-2">
+                                                            <button type="button" class="btn btn-primary btn-md"
+                                                                    id="client_status_report_filter_btn" title="Filter">
+                                                                <i class='bx bx-filter-alt'></i>
+                                                                Filter
+                                                            </button>
+                                                        </div>
+
+                                                        <div class="app-btn me-2">
+                                                            <button type="button" class="btn btn-primary btn-md"
+                                                                    id="client_status_report_filter_reset_btn"
+                                                                    title="Reset">
+                                                                <i class='bx bx-reset'></i>
+                                                                Reset
+                                                            </button>
+                                                        </div>
+                                                        <div class="app-btn">
+                                                            <button type="submit" class="btn btn-primary btn-md"
+                                                                    id="client_status_report_export_btn" title="Export">
+                                                                <i
+                                                                    class='bx bxs-file-export'></i>
+                                                                Export
+                                                            </button>
+
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
                                     </div>
                                 </div>
                             </div>

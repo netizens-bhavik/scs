@@ -325,10 +325,16 @@ class SystemStatsController extends Controller
                 ->select('moms.*')
                 ->count();
 
+            $is_bde = DB::table('clients')
+                ->where('clients.id', '=', $record['client_id'])
+                ->where('clients.manage_by', '=', $user_id)
+                ->select('clients.*')
+                ->count();
+
             $company_modal .= '<a href="javascript:void(0);" class="company_modal" data-id="' . $record['client_id'] . '" title="company_modal">' .
                 $record['company_name'] . '</a>';
 
-            if ($shared_user_check) {
+            if ($shared_user_check && !$is_bde) {
                 $action_btn .= '<span class="badge bg-secondary">Shared</span>';
             } else {
 
@@ -681,7 +687,8 @@ class SystemStatsController extends Controller
 
             $client_mom_data = DB::table('moms')
                 ->leftJoin('users as u2', 'u2.id', '=', 'moms.created_by')
-                ->select('moms.*', 'u2.name as created_by_name')
+                ->leftJoin('mom_modes', 'mom_modes.id', '=', 'moms.mode_of_meeting')
+                ->select('moms.*', 'u2.name as created_by_name', 'mom_modes.mode_name as mode_name')
                 ->where('moms.client_id', $client_id)
                 ->get()->toArray();
             $client_data['moms'] = $client_mom_data;

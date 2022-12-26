@@ -34,6 +34,7 @@
             <th>Minutes Of Meeting</th>
             <th>BDE Feedback</th>
             <th>FollowUp Date</th>
+            <th>Mode Of Meeting</th>
             <th>Added By.</th>
         </tr>
     </thead>
@@ -54,7 +55,7 @@
             searching: false,
             columnDefs: [{
                 orderable: false,
-                targets: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+                targets: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13,14]
             }],
             lengthChange: false,
             ajax: {
@@ -125,6 +126,10 @@
                 {
                     data: 'next_followup_date',
                     name: 'next_followup_date'
+                },
+                {
+                  data: 'mode_of_meeting',
+                    name: 'mode_of_meeting'
                 },
                 {
                     data: 'added_by_username',

@@ -40,7 +40,7 @@ class CreateTempLeadsTable extends Migration
             $table->enum('call_type', ['1', '2'])->comment('1-incoming, 2-outgoing')->nullable();
             $table->integer('tele_caller_id')->nullable();
             $table->integer('last_tele_caller_id')->nullable();
-            $table->text('last_call_comment')->nullable();
+           // $table->text('last_call_comment')->nullable();
             $table->boolean('is_assigned')->default(0);
             $table->integer('imported_by')->nullable();
             $table->integer('created_by')->nullable();

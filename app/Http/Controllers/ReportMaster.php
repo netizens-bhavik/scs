@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Exports\ExportReports;
+use App\Http\Controllers\MOMController;
 use App\Models\Industry;
 use App\Models\Mom;
 use App\Models\City;
@@ -13,7 +14,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
-use App\Http\Controllers\MOMController;
 use Maatwebsite\Excel\Facades\Excel;
 use Spatie\SimpleExcel\SimpleExcelWriter;
 use App\Http\Controllers\SystemLogController;
@@ -37,24 +37,13 @@ class ReportMaster extends Controller
 
         $all_countries = Country::all()->toArray();
 
-        if ($auth_user_role == 'general manager') {
-            $company_data = DB::table('moms')
-                ->join('clients', 'clients.id', '=', 'moms.client_id')
-                ->select('clients.company_name', 'clients.id')
-                ->where('clients.country_id', $user_country)
-                ->whereIn('moms.created_by', $userIds)
-                ->where('moms.is_deleted', null)
-                ->get()->toArray();
-            $company_data = array_map("unserialize", array_unique(array_map("serialize", $company_data)));
-        } else {
-            $company_data = DB::table('moms')
-                ->join('clients', 'clients.id', '=', 'moms.client_id')
-                ->select('clients.company_name', 'clients.id')
-                ->whereIn('moms.created_by', $userIds)
-                ->where('moms.is_deleted', null)
-                ->get()->toArray();
-            $company_data = array_map("unserialize", array_unique(array_map("serialize", $company_data)));
-        }
+        $company_data = DB::table('moms')
+            ->join('clients', 'clients.id', '=', 'moms.client_id')
+            ->select('clients.company_name', 'clients.id')
+            ->whereIn('moms.created_by', $userIds)
+            ->where('moms.is_deleted', null)
+            ->get()->toArray();
+        $company_data = array_map("unserialize", array_unique(array_map("serialize", $company_data)));
 
         // echo "<pre>";
         // print_r($company_data);
@@ -142,7 +131,8 @@ class ReportMaster extends Controller
             ->leftJoin('cities', 'cities.id', '=', 'clients.city_id')
             ->leftJoin('users as manage_user', 'manage_user.id', '=', 'clients.manage_by')
             ->leftJoin('users as added_by', 'added_by.id', '=', 'moms.created_by')
-            ->select('moms.*', 'moms.id as meeting_id', 'manage_user.name as manage_by_username', 'added_by.name as added_by_username', 'clients.*', 'countries.country_name as country_name', 'cities.city_name as city_name')
+            ->leftJoin('mom_modes', 'mom_modes.id', '=', 'moms.mode_of_meeting')
+            ->select('moms.*', 'moms.id as meeting_id', 'manage_user.name as manage_by_username', 'added_by.name as added_by_username', 'clients.*', 'countries.country_name as country_name', 'cities.city_name as city_name','mom_modes.mode_name as mode_name')
             ->where('moms.is_deleted', null)
             ->where(function ($query) use ($searchValue) {
                 $query->where('moms.id', 'like', '%' . $searchValue . '%')
@@ -310,6 +300,7 @@ class ReportMaster extends Controller
                 'bde_feedback' => $record->bde_feedback,
                 'next_followup_date' => date('d/m/Y', strtotime($record->next_followup_date)),
                 'added_by_username' => $record->added_by_username,
+                'mode_of_meeting' => $record->mode_name,
             );
         }
 
@@ -376,17 +367,26 @@ class ReportMaster extends Controller
     public function get_company_users(Request $request)
     {
         $company_id = $request->company_id;
+        $user = Auth::user();
+        $user_id = $user->id;
+        $MOMController = new MOMController;
+        $userIds = $MOMController->getHirarchyUser($user->id);
+        $userIds[] = $user->id;
 
         if ($company_id == '') {
             $company_users = DB::table('moms')
                 ->join('users', 'users.id', '=', 'moms.created_by')
                 ->select('users.id', 'users.name')
+                ->where('moms.is_deleted', null)
+                ->whereIn('moms.created_by', $userIds)
                 ->get()->toArray();
         } else {
             $company_users = DB::table('moms')
                 ->join('users', 'users.id', '=', 'moms.created_by')
                 ->select('users.id', 'users.name')
                 ->where('client_id', $company_id)
+                ->where('moms.is_deleted', null)
+                ->whereIn('moms.created_by', $userIds)
                 ->get()->toArray();
         }
         $company_users = array_map("unserialize", array_unique(array_map("serialize", $company_users)));
@@ -436,7 +436,8 @@ class ReportMaster extends Controller
             ->leftJoin('cities', 'cities.id', '=', 'clients.city_id')
             ->leftJoin('users as manage_user', 'manage_user.id', '=', 'clients.manage_by')
             ->leftJoin('users as added_by', 'added_by.id', '=', 'moms.created_by')
-            ->select('moms.*', 'moms.id as meeting_id', 'manage_user.name as manage_by_username', 'added_by.name as added_by_username', 'clients.*', 'countries.country_name as country_name', 'cities.city_name as city_name')
+            ->leftJoin('mom_modes', 'mom_modes.id', '=', 'moms.mode_of_meeting')
+            ->select('moms.*', 'moms.id as meeting_id', 'manage_user.name as manage_by_username', 'added_by.name as added_by_username', 'clients.*', 'countries.country_name as country_name', 'cities.city_name as city_name', 'mom_modes.mode_name as mode_of_meeting')
             ->where('moms.is_deleted', null)
             ->where(function ($query) use ($mom_report_from_date, $mom_report_to_date) {
                 if ($mom_report_from_date != '' && $mom_report_to_date != '') {
@@ -480,6 +481,7 @@ class ReportMaster extends Controller
             'Minutes of Meeting',
             'BDE Feedback',
             'FollowUp Date',
+            'Mode of Meeting',
             'Added By',
         );
         $i = +1;
@@ -498,6 +500,7 @@ class ReportMaster extends Controller
                 (string)$record->minutes_of_meeting,
                 (string)$record->bde_feedback,
                 (string)date('d/m/Y', strtotime($record->next_followup_date)),
+                (string)$record->mode_of_meeting,
                 (string)$record->added_by_username,
             );
         }
@@ -1495,14 +1498,40 @@ class ReportMaster extends Controller
 
         $user_list = User::whereIn('id', $userIds)->where('is_deleted', null)->get()->pluck('name', 'id')->toArray();
 
+        $client_country_list = DB::table('clients')
+            ->join('countries', 'countries.id', '=', 'clients.country_id')
+            ->where('clients.is_deleted', null)
+            ->where('countries.is_deleted', null)
+            ->whereIn('clients.manage_by', $userIds)
+            ->select('countries.id', 'countries.country_name')
+            ->orderBy('countries.country_name', 'ASC')
+            ->get()->toArray();
+        $client_country_list = array_column($client_country_list, 'country_name', 'id');
+
+        $client_industry_list = DB::table('clients')
+            ->join('industries', 'industries.id', '=', 'clients.industry_id')
+            ->where('clients.is_deleted', null)
+            ->where('industries.is_deleted', null)
+            ->whereIn('clients.manage_by', $userIds)
+            ->select('industries.id', 'industries.industry_name')
+            ->orderBy('industries.industry_name', 'ASC')
+            ->get()->toArray();
+
+        $client_industry_list = array_column($client_industry_list, 'industry_name', 'id');
+
+
+       // dd($client_country_list, $client_industry_list);
+
+
         $all_countries = Country::all()
             ->where('is_deleted', null)
             ->toArray();
+
         $all_industries = Industry::all()
             ->where('is_deleted', null)
             ->toArray();
 
-        return view('backend.reports.client_report', compact('selected_menu', 'all_countries', 'user_list', 'all_industries'));
+        return view('backend.reports.client_report', compact('selected_menu', 'all_countries', 'user_list', 'all_industries', 'client_country_list', 'client_industry_list'));
     }
 
     public function client_status_report_export(Request $request)
@@ -1567,6 +1596,7 @@ class ReportMaster extends Controller
             })
             ->whereDate('moms.updated_at', '>=', $data_from_date)
             ->whereDate('moms.updated_at', '<=', $data_to_date)
+            ->whereIn('clients.manage_by', $userIds)
             ->groupBy('moms.client_id')
             ->select( 'moms.client_id',DB::raw('max(moms.updated_at) as last_mom_date'),
                 DB::raw('max(clients.id) as id'),
@@ -1707,6 +1737,7 @@ class ReportMaster extends Controller
             })
             ->whereDate('moms.updated_at', '>=', $data_from_date)
             ->whereDate('moms.updated_at', '<=', $data_to_date)
+            ->whereIn('clients.manage_by', $userIds)
             ->groupBy('moms.client_id')
             ->select( 'moms.client_id',DB::raw('max(moms.updated_at) as last_mom_date'),
                 DB::raw('max(clients.id) as id'),
@@ -1756,6 +1787,7 @@ class ReportMaster extends Controller
             })
             ->whereDate('moms.updated_at', '>=', $data_from_date)
             ->whereDate('moms.updated_at', '<=', $data_to_date)
+            ->whereIn('clients.manage_by', $userIds)
             ->groupBy('moms.client_id')
             ->select( 'moms.client_id',DB::raw('max(moms.updated_at) as last_mom_date'),
                 DB::raw('max(clients.id) as id'),
@@ -1802,6 +1834,7 @@ class ReportMaster extends Controller
             })
             ->whereDate('moms.updated_at', '>=', $data_from_date)
             ->whereDate('moms.updated_at', '<=', $data_to_date)
+            ->whereIn('clients.manage_by', $userIds)
             ->groupBy('moms.client_id')
             ->select( 'moms.client_id',DB::raw('max(moms.updated_at) as last_mom_date'),
                 DB::raw('max(clients.id) as id'),
@@ -2367,6 +2400,7 @@ class ReportMaster extends Controller
             })
             ->whereDate('moms.updated_at', '>=', $data_from_date)
             ->whereDate('moms.updated_at', '<=', $data_to_date)
+            ->whereIn('clients.manage_by', $userIds)
             ->groupBy('moms.client_id')
             ->select( 'moms.client_id',DB::raw('max(moms.updated_at) as last_mom_date'),
                 DB::raw('max(clients.id) as id'),

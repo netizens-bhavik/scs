@@ -102,6 +102,7 @@
                                 <th>BDE Feedback</th>
                                 <th>Next MOM Date-Time</th>
                                 <th>MOM Status</th>
+                                <th>MODE OF MEETING</th>
                                 <th>Added By</th>
                                 </thead>
                                 <tbody>
@@ -127,6 +128,7 @@
                                                 Not Started
                                             @endif
                                         </td>
+                                        <td>{{$mom->mode_name}}</td>
                                         <td>{{$mom->created_by_name}}</td>
 
                                 @endforeach

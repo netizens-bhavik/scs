@@ -12,7 +12,6 @@ class SystemStatsController extends Controller
 {
     public function index()
     {
-
     }
 
     public function mom_stats(Request $request)
@@ -26,7 +25,7 @@ class SystemStatsController extends Controller
             $country_id = $request->country_id ?? auth()->user()->country_id;
         }
 
-//        $country_id = $request->country_id ?? auth()->user()->country_id;
+        //        $country_id = $request->country_id ?? auth()->user()->country_id;
         $user_id = $request->user_id ?? auth()->user()->id;
 
         $followup_type = $request->followup_type;
@@ -177,7 +176,6 @@ class SystemStatsController extends Controller
             'total_pending_records' => $total_pending_records,
             'total_future_records' => $total_future_records,
         ]);
-
     }
 
     function get_mom_followups_data(Request $request)
@@ -339,10 +337,10 @@ class SystemStatsController extends Controller
             } else {
 
 
-//            if ($user_edit_permissions){
-//                $action_btn .= '<a href="javascript:void(0);" class="btn btn  btn-outline-primary manage_mom" data-client_id="'.$record['client_id'].'"  data-id="' . $record['id'] . '" title="manage">
-//                Manage MOM</a>&nbsp;&nbsp;&nbsp;';
-//            }
+                //            if ($user_edit_permissions){
+                //                $action_btn .= '<a href="javascript:void(0);" class="btn btn  btn-outline-primary manage_mom" data-client_id="'.$record['client_id'].'"  data-id="' . $record['id'] . '" title="manage">
+                //                Manage MOM</a>&nbsp;&nbsp;&nbsp;';
+                //            }
 
                 // add permission condition
                 if ($user_edit_permissions) {
@@ -350,16 +348,15 @@ class SystemStatsController extends Controller
                 Add MOM</a>&nbsp;&nbsp;&nbsp;';
                 }
 
-//            // add permission condition
-//            if ($user_delete_permissions) {
-//                $action_btn .= '<a href="javascript:void(0);" class="btn btn btn-icon btn-outline-primary delete_mom" data-id="' . $record['id'] . '" data-name="' . $record['company_name'] . '" title="Delete">
-//                <i class="bx bx-trash-alt"></i></a>';
-//            }
+                //            // add permission condition
+                //            if ($user_delete_permissions) {
+                //                $action_btn .= '<a href="javascript:void(0);" class="btn btn btn-icon btn-outline-primary delete_mom" data-id="' . $record['id'] . '" data-name="' . $record['company_name'] . '" title="Delete">
+                //                <i class="bx bx-trash-alt"></i></a>';
+                //            }
 
                 if (!$user_edit_permissions && !$user_delete_permissions) {
                     $action_btn .= '<span class="badge bg-secondary">No Permission</span>';
                 }
-
             }
 
 
@@ -383,8 +380,6 @@ class SystemStatsController extends Controller
             "recordsFiltered" => $totalRecordswithFilter,
             "data" => $dataArr,
         ]);
-
-
     }
 
     function get_chart_data(Request $request)
@@ -422,8 +417,8 @@ class SystemStatsController extends Controller
             ->whereIn('clients.manage_by', $hierarchy_users)
             ->select('moms.id as mom_id', 'moms.client_id as client_id', 'clients.company_name', 'clients.manage_by', 'users.name as user_name')
             ->orderBy('moms.created_by', 'desc')
-//            ->groupBy('moms.client_status')
-//            ->select('moms.client_status',DB::raw("STRING_AGG(moms.id,',') as moms_id"), DB::raw('count(*) as total'))
+            //            ->groupBy('moms.client_status')
+            //            ->select('moms.client_status',DB::raw("STRING_AGG(moms.id,',') as moms_id"), DB::raw('count(*) as total'))
             ->get()->toArray();
 
         $client_status_records = json_decode(json_encode($client_status_records), true);
@@ -453,12 +448,12 @@ class SystemStatsController extends Controller
 
         $client_status_records = [];
 
-           foreach($total_client_status as $key => $value){
-               $client_status_records[] = [
-                   'client_status' => $key,
-                   'total' => $value
-               ];
-           }
+        foreach ($total_client_status as $key => $value) {
+            $client_status_records[] = [
+                'client_status' => $key,
+                'total' => $value
+            ];
+        }
 
 
         $job_status_records = DB::table('moms')
@@ -466,7 +461,7 @@ class SystemStatsController extends Controller
             ->leftJoin('clients', 'moms.client_id', '=', 'clients.id')
             ->leftJoin('users', 'clients.manage_by', '=', 'users.id')
             ->where('moms.is_deleted', '=', null)
-//            ->where('moms.followup_status', '=', null)
+            //            ->where('moms.followup_status', '=', null)
             ->where(function ($query) use ($country_id) {
                 if ($country_id != 0) {
                     $query->where('users.country_id', '=', $country_id);
@@ -577,23 +572,23 @@ class SystemStatsController extends Controller
         $total_job = array_sum($job_status_data);
         $total_country = array_sum($country_wise_data);
 
-//        //if $client_status all zero then return empty array
-//        if (array_sum($client_status_data) == 0) {
-//            $client_status_labels = ['No Data'];
-//            $client_status_data = [100];
-//        }
-//
-//        //if $job_status all zero then return empty array
-//        if (array_sum($job_status_data) == 0) {
-//            $job_status_labels = ['No Data'];
-//            $job_status_data = [100];
-//        }
-//
-//        //if $country_wise all zero then return empty array
-//        if (array_sum($country_wise_data) == 0) {
-//            $country_wise_labels = ['No Data'];
-//            $country_wise_data = [100];
-//        }
+        //        //if $client_status all zero then return empty array
+        //        if (array_sum($client_status_data) == 0) {
+        //            $client_status_labels = ['No Data'];
+        //            $client_status_data = [100];
+        //        }
+        //
+        //        //if $job_status all zero then return empty array
+        //        if (array_sum($job_status_data) == 0) {
+        //            $job_status_labels = ['No Data'];
+        //            $job_status_data = [100];
+        //        }
+        //
+        //        //if $country_wise all zero then return empty array
+        //        if (array_sum($country_wise_data) == 0) {
+        //            $country_wise_labels = ['No Data'];
+        //            $country_wise_data = [100];
+        //        }
 
         return response()->json([
             'total_client' => $total_client,
@@ -658,16 +653,15 @@ class SystemStatsController extends Controller
             $users = [];
         }
 
-//        echo "<pre>";
-//        print_r($users);
-//        echo "</pre>";
-//        exit;
+        //        echo "<pre>";
+        //        print_r($users);
+        //        echo "</pre>";
+        //        exit;
         // dd($users);
 
         $view = view('backend.dashboard.country_users', compact('users'))->render();
 
         return response()->json(['html' => $view]);
-
     }
 
     public function company_modal(Request $request)
@@ -692,7 +686,6 @@ class SystemStatsController extends Controller
                 ->where('moms.client_id', $client_id)
                 ->get()->toArray();
             $client_data['moms'] = $client_mom_data;
-
         } else {
             echo "No data found";
         }
@@ -706,6 +699,394 @@ class SystemStatsController extends Controller
             ]
         );
 
-//        return view('backend.client_history.client_history', compact( 'client_data'));
+        //        return view('backend.client_history.client_history', compact( 'client_data'));
+    }
+
+    public function mom_status_clients_list(Request $request)
+    {
+
+        $logged_user_role = Auth::user()->getRoleNames()->first();
+
+        if ($logged_user_role == 'administrator' || $logged_user_role == 'director') {
+            $country_id = $request->country_id ?? 0;
+        } else {
+            $country_id = $request->country_id ?? auth()->user()->country_id;
+        }
+
+        $data_user_id = $request->user_id == 0 ? auth()->user()->id : $request->user_id;
+
+        $country_chart_id = $request->country_id == 0 ? null : $request->country_id;
+
+        $data_user_id = (int)$data_user_id;
+
+        $MOMController = new MOMController;
+        $hierarchy_users = $MOMController->getHirarchyUser($data_user_id);
+        $hierarchy_users[] = $data_user_id;
+
+        // dd($request->all());
+        $mom_status = $request->mom_status ?? null;
+        $mom_status_label = $request->mom_status ?? null;
+
+        switch ($mom_status) {
+            case 'High Priority':
+                $mom_status = 1;
+                break;
+            case 'Medium Priority':
+                $mom_status = 2;
+                break;
+            case 'Low Priority':
+                $mom_status = 3;
+                break;
+            case 'Requirement Received':
+                $mom_status = 4;
+                break;
+            case 'Under Discussion':
+                $mom_status = 5;
+                break;
+            case 'Closed':
+                $mom_status = 6;
+                break;
+            default:
+                $mom_status = null;
+                break;
+        }
+
+        if ($mom_status == null) {
+            return response()->json(
+                [
+                    'status' => false,
+                    'html' => 'No data found',
+                ]
+            );
+        }
+
+        $filter_data = array(
+            'mom_status' => $mom_status,
+            'country_id' => $country_id,
+            'data_user_id' => $data_user_id,
+            'country_chart_id' => $country_chart_id,
+            'mom_status_label' => $mom_status_label,
+        );
+
+        $view = view('backend.dashboard.mom_status_clients_list', compact('filter_data'))->render();
+
+        return response()->json(
+            [
+                'status' => true,
+                'html' => $view,
+            ]
+        );
+        // $client_data = DB::table('moms')
+        //     ->leftJoin('clients', 'clients.id', '=', 'moms.client_id')
+        //     ->leftJoin('users as u2', 'u2.id', '=', 'moms.created_by')
+        //     ->leftJoin('mom_modes', 'mom_modes.id', '=', 'moms.mode_of_meeting')
+        //     ->select('moms.*', 'clients.company_name as company_name', 'u2.name as created_by_name', 'mom_modes.mode_name as mode_name')
+        //     ->where('moms.client_status', $mom_status)
+        //     ->where('moms.is_deleted', '=', null)
+        //     ->where('moms.followup_status', '=', null)
+        //     ->where(function ($query) use ($country_id) {
+        //         if ($country_id != 0) {
+        //             $query->where('u2.country_id', '=', $country_id);
+        //         }
+        //     })
+        //     ->whereIn('clients.manage_by', $hierarchy_users)
+        //     ->get()->toArray();
+
+        // dd($client_data);
+    }
+
+
+    public function country_wise_clients_list(Request $request)
+    {
+        $country_name = $request->country_name ?? null;
+
+
+        $country_id = DB::table('countries')
+            ->select('id')
+            ->where('country_name', $country_name)
+            ->first();
+
+        $country_id = $country_id->id;
+
+        // if ($data_user_id == null || $data_user_id == 0) {
+        //     $data_user_id = Auth::user()->id;
+        // }
+
+
+        $data_user_id = $request->user_id == 0 ? auth()->user()->id : $request->user_id;
+        $data_user_id = (int)$data_user_id;
+
+        $MOMController = new MOMController;
+        $hierarchy_users = $MOMController->getHirarchyUser($data_user_id);
+        $hierarchy_users[] = $data_user_id;
+
+        // $client_data = DB::table('clients')
+        //     ->leftJoin('countries', 'clients.country_id', '=', 'countries.id')
+        //     ->where('clients.is_deleted', '=', null)
+        //     ->where('clients.country_id', '=', $country_id)
+        //     ->whereIn('clients.manage_by', $hierarchy_users)
+        //     ->select('clients.*', 'countries.country_name as country_name')
+        //     ->get()->toArray();
+
+
+        $filter_data = array(
+            'country_id' => $country_id,
+            'data_user_id' => $data_user_id,
+            'country_name' => $country_name,
+        );
+
+        $view = view('backend.dashboard.country_wise_clients_list', compact('filter_data'))->render();
+
+        return response()->json(
+            [
+                'status' => true,
+                'html' => $view,
+            ]
+        );
+    }
+
+
+    public function get_mom_status_clients_list(Request $request)
+    {
+        $mom_status = $request->mom_status ?? null;
+        $country_id = $request->country_id ?? null;
+        $data_user_id = $request->user_id ?? null;
+        $country_chart_id = $request->country_chart_id ?? null;
+
+        if ($data_user_id == null || $data_user_id == 0) {
+            $data_user_id = Auth::user()->id;
+        }
+
+        $MOMController = new MOMController;
+        $hierarchy_users = $MOMController->getHirarchyUser($data_user_id);
+        $hierarchy_users[] = $data_user_id;
+
+        $draw = $request->get('draw');
+        $start = $request->get("start");
+        $rowperpage = $request->get("length"); // total number of rows per page
+
+        $columnIndexArr = $request->get('order');
+        $columnNameArr = $request->get('columns');
+        $orderArr = $request->get('order');
+        $searchArr = $request->get('search');
+
+        $columnIndex = isset($columnIndexArr[0]['column']) ? $columnIndexArr[0]['column'] : ''; // Column index
+        $columnName = !empty($columnIndex) ? $columnNameArr[$columnIndex]['data'] : 'updated_at'; // Column name
+        $columnSortOrder = !empty($columnIndex) ? $orderArr[0]['dir'] : 'DESC'; // asc or desc
+        $searchValue = $searchArr['value']; // Search value
+
+
+
+        // Get records, also we have included search filter as well
+        $records = DB::table('moms')
+            ->leftJoin('clients', 'clients.id', '=', 'moms.client_id')
+            ->leftJoin('users as u2', 'u2.id', '=', 'moms.created_by')
+            ->leftJoin('mom_modes', 'mom_modes.id', '=', 'moms.mode_of_meeting')
+            ->leftJoin('countries', 'countries.id', '=', 'clients.country_id')
+            ->leftJoin('cities', 'cities.id', '=', 'clients.city_id')
+            ->leftJoin('industries', 'industries.id', '=', 'clients.industry_id')
+            ->select('moms.*', 'clients.company_name as company_name', 'u2.name as created_by_name', 'mom_modes.mode_name as mode_name', 'countries.country_name as country_name', 'cities.city_name as city_name', 'industries.industry_name as industry_name', 'clients.id as client_id', 'clients.address as address', 'clients.email as email', 'clients.phone_no as phone')
+            ->where('moms.client_status', $mom_status)
+            ->where('moms.is_deleted', '=', null)
+            ->where('moms.followup_status', '=', null)
+            ->where(function ($query) use ($country_id) {
+                if ($country_id != 0) {
+                    $query->where('u2.country_id', '=', $country_id);
+                }
+            })
+            ->whereIn('clients.manage_by', $hierarchy_users)
+            ->orderBy($columnName, $columnSortOrder)
+            ->skip($start)
+            ->take($rowperpage)
+            ->get()->toArray();
+
+        $totalRecords = DB::table('moms')
+            ->leftJoin('clients', 'clients.id', '=', 'moms.client_id')
+            ->leftJoin('users as u2', 'u2.id', '=', 'moms.created_by')
+            ->leftJoin('mom_modes', 'mom_modes.id', '=', 'moms.mode_of_meeting')
+            ->leftJoin('countries', 'countries.id', '=', 'clients.country_id')
+            ->leftJoin('cities', 'cities.id', '=', 'clients.city_id')
+            ->leftJoin('industries', 'industries.id', '=', 'clients.industry_id')
+            ->select('moms.*', 'clients.company_name as company_name', 'u2.name as created_by_name', 'mom_modes.mode_name as mode_name', 'countries.country_name as country_name', 'cities.city_name as city_name', 'industries.industry_name as industry_name', 'clients.id as client_id', 'clients.address as address', 'clients.email as email', 'clients.phone_no as phone')
+            ->where('moms.client_status', $mom_status)
+            ->where('moms.is_deleted', '=', null)
+            ->where('moms.followup_status', '=', null)
+            ->where(function ($query) use ($country_id) {
+                if ($country_id != 0) {
+                    $query->where('u2.country_id', '=', $country_id);
+                }
+            })
+            ->whereIn('clients.manage_by', $hierarchy_users)
+            ->count();
+
+        $totalRecordswithFilter = DB::table('moms')
+            ->leftJoin('clients', 'clients.id', '=', 'moms.client_id')
+            ->leftJoin('users as u2', 'u2.id', '=', 'moms.created_by')
+            ->leftJoin('mom_modes', 'mom_modes.id', '=', 'moms.mode_of_meeting')
+            ->leftJoin('countries', 'countries.id', '=', 'clients.country_id')
+            ->leftJoin('cities', 'cities.id', '=', 'clients.city_id')
+            ->leftJoin('industries', 'industries.id', '=', 'clients.industry_id')
+            ->select('moms.*', 'clients.company_name as company_name', 'u2.name as created_by_name', 'mom_modes.mode_name as mode_name', 'countries.country_name as country_name', 'cities.city_name as city_name', 'industries.industry_name as industry_name', 'clients.id as client_id', 'clients.address as address', 'clients.email as email', 'clients.phone_no as phone')
+            ->where('moms.client_status', $mom_status)
+            ->where('moms.is_deleted', '=', null)
+            ->where('moms.followup_status', '=', null)
+            ->where(function ($query) use ($country_id) {
+                if ($country_id != 0) {
+                    $query->where('u2.country_id', '=', $country_id);
+                }
+            })
+            ->whereIn('clients.manage_by', $hierarchy_users)
+            ->count();
+
+
+
+        // dd($records);
+
+        $app_url = env('APP_URL');
+
+        $dataArr = [];
+        $i = $start + 1;
+        foreach ($records as $record) {
+            $dataArr[] = array(
+                "id" => $i++,
+                "country_name" => $record->country_name,
+                "company_name" => $record->company_name,
+                "contact_person" => "<a href='" . $app_url . "get_company_contact_person/" . $record->client_id . "' target='_blank' value=" . $record->id . " class='btn btn-primary btn-sm'
+                id='client_status_report_contact_person_btn'>
+                <i class='bx bx-group'></i>
+                View
+                </a>",
+                "address" => $record->address,
+                "city_name" => $record->city_name,
+                "phone" => $record->phone,
+                "email" => $record->email,
+                "industry_name" => $record->industry_name,
+            );
+        }
+
+
+
+        return response()->json([
+            "draw" => intval($draw),
+            "recordsTotal" => $totalRecords,
+            "recordsFiltered" => $totalRecordswithFilter,
+            "data" => $dataArr,
+        ]);
+    }
+
+    public function get_country_wise_clients_list(Request $request)
+    {
+        $country_id = $request->country_id ?? null;
+        $data_user_id = $request->user_id ?? null;
+
+        if ($data_user_id == null || $data_user_id == 0) {
+            $data_user_id = Auth::user()->id;
+        }
+
+        $MOMController = new MOMController;
+        $hierarchy_users = $MOMController->getHirarchyUser($data_user_id);
+        $hierarchy_users[] = $data_user_id;
+
+        $draw = $request->get('draw');
+        $start = $request->get("start");
+        $rowperpage = $request->get("length"); // total number of rows per page
+
+        $columnIndexArr = $request->get('order');
+        $columnNameArr = $request->get('columns');
+        $orderArr = $request->get('order');
+        $searchArr = $request->get('search');
+
+        $columnIndex = isset($columnIndexArr[0]['column']) ? $columnIndexArr[0]['column'] : ''; // Column index
+        $columnName = !empty($columnIndex) ? $columnNameArr[$columnIndex]['data'] : 'updated_at'; // Column name
+        $columnSortOrder = !empty($columnIndex) ? $orderArr[0]['dir'] : 'DESC'; // asc or desc
+        $searchValue = $searchArr['value']; // Search value
+
+
+        // DB::table('clients')
+        //     ->leftJoin('countries', 'clients.country_id', '=', 'countries.id')
+        //     ->where('clients.is_deleted', '=', null)
+        //     ->where('clients.country_id', '=', $country_id)
+        //     ->whereIn('clients.manage_by', $hierarchy_users)
+        //     ->select('clients.*', 'countries.country_name as country_name')
+        //     ->get()->toArray();
+
+
+        $records = DB::table('clients')
+            ->leftJoin('users as u2', 'u2.id', '=', 'clients.manage_by')
+            ->leftJoin('countries', 'countries.id', '=', 'clients.country_id')
+            ->leftJoin('cities', 'cities.id', '=', 'clients.city_id')
+            ->leftJoin('industries', 'industries.id', '=', 'clients.industry_id')
+            ->select('clients.*', 'u2.name as manage_by_name', 'countries.country_name as country_name', 'cities.city_name as city_name', 'industries.industry_name as industry_name')
+            ->where('clients.is_deleted', '=', null)
+            ->where(function ($query) use ($country_id) {
+                if ($country_id != 0) {
+                    $query->where('clients.country_id', '=', $country_id);
+                }
+            })
+            ->orderBy($columnName, $columnSortOrder)
+            ->skip($start)
+            ->take($rowperpage)
+            ->get()->toArray();
+
+        $totalRecords = DB::table('clients')
+            ->leftJoin('users as u2', 'u2.id', '=', 'clients.manage_by')
+            ->leftJoin('countries', 'countries.id', '=', 'clients.country_id')
+            ->leftJoin('cities', 'cities.id', '=', 'clients.city_id')
+            ->leftJoin('industries', 'industries.id', '=', 'clients.industry_id')
+            ->select('clients.*', 'u2.name as manage_by_name', 'countries.country_name as country_name', 'cities.city_name as city_name', 'industries.industry_name as industry_name')
+            ->where('clients.is_deleted', '=', null)
+            ->where(function ($query) use ($country_id) {
+                if ($country_id != 0) {
+                    $query->where('clients.country_id', '=', $country_id);
+                }
+            })
+            ->count();
+
+
+        $totalRecordswithFilter = DB::table('clients')
+            ->leftJoin('users as u2', 'u2.id', '=', 'clients.manage_by')
+            ->leftJoin('countries', 'countries.id', '=', 'clients.country_id')
+            ->leftJoin('cities', 'cities.id', '=', 'clients.city_id')
+            ->leftJoin('industries', 'industries.id', '=', 'clients.industry_id')
+            ->select('clients.*', 'u2.name as manage_by_name', 'countries.country_name as country_name', 'cities.city_name as city_name', 'industries.industry_name as industry_name')
+            ->where('clients.is_deleted', '=', null)
+            ->where(function ($query) use ($country_id) {
+                if ($country_id != 0) {
+                    $query->where('clients.country_id', '=', $country_id);
+                }
+            })
+            ->count();
+
+
+        $app_url = env('APP_URL');
+
+        $dataArr = [];
+        $i = $start + 1;
+        foreach ($records as $record) {
+            $dataArr[] = array(
+                "id" => $i++,
+                "country_name" => $record->country_name,
+                "company_name" => $record->company_name,
+                "contact_person" => "<a href='" . $app_url . "get_company_contact_person/" . $record->id . "' target='_blank' value=" . $record->id . " class='btn btn-primary btn-sm'
+                id='client_status_report_contact_person_btn'>
+                <i class='bx bx-group'></i>
+                View
+                </a>",
+                "address" => $record->address,
+                "city_name" => $record->city_name,
+                "phone" => $record->phone_no,
+                "email" => $record->email,
+                "industry_name" => $record->industry_name,
+            );
+        }
+
+
+
+        return response()->json([
+            "draw" => intval($draw),
+            "recordsTotal" => $totalRecords,
+            "recordsFiltered" => $totalRecordswithFilter,
+            "data" => $dataArr,
+        ]);
     }
 }

@@ -34,8 +34,8 @@ class ImportController extends Controller
 
     //     /* $path = $request->file('lead_file')->getRealPath();
     //     print_r($path); */
-    //     $path1 = $request->file('lead_file')->store('temp'); 
-    //     $path = storage_path('app').'/'.$path1;  
+    //     $path1 = $request->file('lead_file')->store('temp');
+    //     $path = storage_path('app').'/'.$path1;
 
     //     $import = new TempLeadsImport;
     //     //Excel::selectSheetsByIndex(0)->load();
@@ -43,7 +43,7 @@ class ImportController extends Controller
 
     //     Session::put('excelData', $import->data);
 
-    //     $importedData = Session::get('excelData');        
+    //     $importedData = Session::get('excelData');
     //     $added = 0;
     //     $notAdded = 0;
     //     foreach($importedData as $key => $value) {
@@ -61,15 +61,15 @@ class ImportController extends Controller
     //     $msg = '';
     //     if(!empty($added))
     //         $msg .= "<p>". $added . " record(s) imported successfully.</p>";
-        
+
     //     if(!empty($notAdded))
     //         $msg .= "<p>" . $notAdded . " record(s) gives error. To check the logs click download leatest file</p>";
-            
+
     //     return response()->json([
     //         "status" => true,
     //         "message" => $msg
     //     ]);
-        
+
     // }
 
     public $exportArray = [];
@@ -88,15 +88,15 @@ class ImportController extends Controller
         }
 
         try {
-            $path1 = $request->file('lead_file')->store('temp'); 
-            $path = storage_path('app').'/'.$path1; 
+            $path1 = $request->file('lead_file')->store('temp');
+            $path = storage_path('app').'/'.$path1;
 
             $header = SimpleExcelReader::create($path)->getHeaders();
 
             //print_r($header);
 
             $headererFlag = true;
-               
+
             if(isset($header[0]) && preg_replace("/\s+/", "", ucwords(strtolower($header[0]))) != "CountryName") {
                 $headererFlag = false;
             }
@@ -141,7 +141,7 @@ class ImportController extends Controller
             }
             if(isset($header[14]) && preg_replace("/\s+/", "", ucwords(strtolower($header[14]))) != "WebsiteName") {
                 $headererFlag = false;
-            } 
+            }
 
             if($headererFlag == false) {
                 return response()->json([
@@ -157,9 +157,9 @@ class ImportController extends Controller
                     "status" => false,
                     "message" => "Please add records in your file"
                 ]);
-            } 
+            }
 
-            
+
             $rows = SimpleExcelReader::create($path)->noHeaderRow()->getRows()->toArray();
             //$rows->each(function (array $row) {
             foreach($rows as $key => $row) {
@@ -167,7 +167,7 @@ class ImportController extends Controller
                 $flag = true;
                 $emailPattern = "/^([a-z0-9\+_\-]+)(\.[a-z0-9\+_\-]+)*@([a-z0-9\-]+\.)+[a-z]{2,9}$/ix";
                 if($key != 0) {
-                    
+
                     if (!empty($row)) {
                         if (!empty($row[0]) || !empty($row[1]) || !empty($row[11]) || !empty($row[12])) {
                             if (empty($row[0])) {
@@ -344,12 +344,12 @@ class ImportController extends Controller
                 }
 
                 $row[15] = $rowStatus;
-                $this->exportArray[] = $row;                
+                $this->exportArray[] = $row;
             }
 
             Session::put('excelData', $this->exportArray);
 
-            $importedData = Session::get('excelData');        
+            $importedData = Session::get('excelData');
             $added = 0;
             $notAdded = 0;
             foreach($importedData as $key => $value) {
@@ -367,10 +367,10 @@ class ImportController extends Controller
             $msg = '';
             if(!empty($added))
                 $msg .= "<p>". $added . " record(s) imported successfully.</p>";
-            
+
             if(!empty($notAdded))
                 $msg .= "<p>" . $notAdded . " record(s) gives error. To check the logs click download leatest file</p>";
-                
+
             return response()->json([
                 "status" => true,
                 "message" => $msg

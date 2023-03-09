@@ -4,7 +4,7 @@
 <!-- Core CSS -->
 <link rel="stylesheet" href="{{ asset('public/assets/vendor/css/core.css') }}" class="template-customizer-core-css" />
 <link rel="stylesheet" href="{{ asset('public/assets/vendor/css/theme-default.css') }}"
-      class="template-customizer-theme-css" />
+    class="template-customizer-theme-css" />
 <link rel="stylesheet" href="{{ asset('public/assets/css/demo.css') }}" />
 <link rel="stylesheet" href="{{ asset('public/assets/css/nice-select.css') }}" />
 
@@ -30,8 +30,17 @@
 <script src="{{ asset('public/assets/js/config.js') }}"></script>
 
 <style>
+    .modal .btn-close {
+        position: absolute;
+        right: 15px;
+        top: 15px;
+        margin: 0 !important;
+    }
 
-    
+    table.dataTable tbody td.dtr-control {
+        padding: 5px 10px 5px 25px !important;
+    }
+
     table th {
         text-transform: uppercase !important;
     }

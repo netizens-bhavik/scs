@@ -596,9 +596,11 @@ Route::group(['middleware' => 'prevent-back-history'], function () {
         ->name('view_assinged_leads');
 
     Route::get(
-        '/client_history', function () {
-        return redirect()->back();
-    })->name('client_history');
+        '/client_history',
+        function () {
+            return redirect()->back();
+        }
+    )->name('client_history');
 
 
     Route::get(
@@ -992,6 +994,34 @@ Route::group(['middleware' => 'prevent-back-history'], function () {
     )->middleware([
         'auth', 'role:administrator|director|general manager|bde|bdm|softcaller',
     ])->name('client_status_report_export_check');
+
+    Route::post(
+        '/mom_status_clients_list',
+        [SystemStatsController::class, 'mom_status_clients_list']
+    )->middleware([
+        'auth', 'role:administrator|director|general manager|bde|bdm|softcaller',
+    ])->name('mom_status_clients_list');
+
+    Route::post(
+        '/get_mom_status_clients_list',
+        [SystemStatsController::class, 'get_mom_status_clients_list']
+    )->middleware([
+        'auth', 'role:administrator|director|general manager|bde|bdm|softcaller',
+    ])->name('get_mom_status_clients_list');
+
+    Route::post(
+        '/country_wise_clients_list',
+        [SystemStatsController::class, 'country_wise_clients_list']
+    )->middleware([
+        'auth', 'role:administrator|director|general manager|bde|bdm|softcaller',
+    ])->name('country_wise_clients_list');
+
+    Route::post(
+        '/get_country_wise_clients_list',
+        [SystemStatsController::class, 'get_country_wise_clients_list']
+    )->middleware([
+        'auth', 'role:administrator|director|general manager|bde|bdm|softcaller',
+    ])->name('get_country_wise_clients_list');
 
 
     Route::get('logout', function () {

@@ -850,16 +850,20 @@ class SystemStatsController extends Controller
     {
         $mom_status = $request->mom_status ?? null;
         $country_id = $request->country_id ?? null;
-        $data_user_id = $request->user_id ?? null;
+        $data_user_id = $request->data_user_id ?? null;
         $country_chart_id = $request->country_chart_id ?? null;
 
         if ($data_user_id == null || $data_user_id == 0) {
             $data_user_id = Auth::user()->id;
         }
 
+        $data_user_id = (int)$data_user_id;
+
         $MOMController = new MOMController;
         $hierarchy_users = $MOMController->getHirarchyUser($data_user_id);
         $hierarchy_users[] = $data_user_id;
+
+        //dd($hierarchy_users);
 
         $draw = $request->get('draw');
         $start = $request->get("start");
@@ -977,7 +981,7 @@ class SystemStatsController extends Controller
     public function get_country_wise_clients_list(Request $request)
     {
         $country_id = $request->country_id ?? null;
-        $data_user_id = $request->user_id ?? null;
+        $data_user_id = $request->data_user_id ?? null;
 
         if ($data_user_id == null || $data_user_id == 0) {
             $data_user_id = Auth::user()->id;

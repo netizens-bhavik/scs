@@ -1,9 +1,10 @@
-@php
-    //    echo "<pre>";
-    //    print_r($filter_data);
-    //    echo "</pre>";
-@endphp
-
+<style>
+    table.dataTable tbody tr td:nth-child(4) {
+        max-width: 120px;
+        white-space: normal !important;
+        word-wrap: break-word !important;
+    }
+</style>
 
 
 <div class="modal" id="viewClientsModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
@@ -130,53 +131,4 @@
         });
 
     });
-
-    //
-
-    // $(".btn-close").on('click', function(e) {
-    //     $("#manageMomModal").modal('hide');
-    //     $("#manageMomModalBox").html('');
-    // });
-
-    // $(".company_modal").on('click', function(e) {
-    //     var id = $(this).attr('data-id');
-    //     jQuery.ajax({
-    //         url: "{{ url('company_modal') }}",
-    //         method: 'POST',
-    //         data: {
-    //             "_token": "{{ csrf_token() }}",
-    //             id: id,
-    //         },
-    //         beforeSend: function() {
-    //             swal({
-    //                 title: "info",
-    //                 text: "Please Wait, Your Request has been processed!",
-    //                 icon: "info",
-    //                 button: false,
-    //                 closeOnClickOutside: false,
-    //                 closeOnEsc: false
-    //             });
-    //         },
-    //         success: function(data) {
-    //             swal.close();
-    //             if (data.status == true) {
-    //                 $("#companyModalBox").html('');
-    //                 $("#companyModalBox").html(data.html);
-    //                 $("#companyModal").modal('show');
-    //             } else {
-    //                 swal("Error", data.message, "error");
-    //             }
-
-    //         },
-    //         error: function(data) {
-    //             console.log(data);
-    //         }
-    //     });
-    // });
-
-    // $(".manage_mom").on('click', function(e) {
-    //     var id = $(this).attr('data-id');
-    //     var url = "{{ url('moms') }}" + "/" + id;
-    //     window.location.href = url;
-    // });
 </script>

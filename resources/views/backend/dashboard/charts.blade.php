@@ -225,7 +225,7 @@
                                 index] + '</h6>\n';
                         job_status_data += '</div>\n';
                         job_status_data +=
-                            '<div class="user-progress job_status_clients btn btn-primary">';
+                            '<div class="user-progress job_status_clients btn btn-primary" style="pointer-events:none">';
                         job_status_data += '<small class="fw-semibold">' + value +
                             '</small>';
                         job_status_data += '</div>';
@@ -257,13 +257,13 @@
                         job_status_data += '</div>\n';
                         if (data.job_status_labels[index] == 'no data') {
                             job_status_data +=
-                                '<div class="user-progress job_status_clients btn btn-primary">';
+                                '<div class="user-progress job_status_clients btn btn-primary" style="pointer-events:none">';
                             job_status_data += '<small class="fw-semibold">' + 0 +
                                 '</small>';
                             job_status_data += '</div>';
                         } else {
                             job_status_data +=
-                                '<div class="user-progress job_status_clients btn btn-primary">';
+                                '<div class="user-progress job_status_clients btn btn-primary" style="pointer-events:none">';
                             job_status_data += '<small class="fw-semibold">' + value +
                                 '</small>';
                             job_status_data += '</div>';
